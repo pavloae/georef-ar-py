@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "georef-ar-py"
+version = "0.0.1"
+authors = [
+  { name="Pablo E. Andino", email="pabloe.andino@gmail.com" },
+]
+description = "Paquete para consultas y procesamiento de respuestas sobre la API de georef-ar"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pavloae/georef-ar-py"
+"Bug Tracker" = "https://github.com/pavloae/georef-ar-py/issues"
