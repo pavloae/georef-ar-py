@@ -1,6 +1,8 @@
 import unittest
 
 from src.georef_ar_py import georequests
+from src.georef_ar_py.check import compare_data
+from src.georef_ar_py.georequests import API_BASE_URL
 
 
 class MyTestCase(unittest.TestCase):
@@ -26,6 +28,12 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(location2['provincia_nombre'], 'Ciudad Autónoma de Buenos Aires')
         self.assertEqual(location2['departamento_nombre'], 'Comuna 1')
+
+
+class CheckTestCase(unittest.TestCase):
+
+    def test_check_states(self):
+        compare_data(API_BASE_URL, "http://52.23.185.155/georef/api/")
 
 
 if __name__ == '__main__':

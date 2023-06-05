@@ -5,6 +5,11 @@ import requests as requests
 API_BASE_URL = "https://apis.datos.gob.ar/georef/api/"
 
 
+def get(url, endpoint, **kwargs):
+    path = "{}{}?{}".format(url, endpoint, urllib.parse.urlencode(kwargs))
+    return requests.get(path).json()
+
+
 def get_similar(endpoint, nombre, **kwargs):
     kwargs["nombre"] = nombre
     url = "{}{}?{}".format(API_BASE_URL, endpoint, urllib.parse.urlencode(kwargs))
