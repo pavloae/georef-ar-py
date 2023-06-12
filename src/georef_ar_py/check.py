@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 from deepdiff import DeepDiff
 
@@ -33,7 +34,7 @@ def get_diff(old, new, ignore_order=True, significant_digits=2, exclude_paths=No
     )
 
 
-def get_states_data_diff(old_url, new_url):
+def get_provinces_data_diff(old_url, new_url):
     old_count = georequests.get(old_url, 'provincias', campos='basico')['total']
     old_response = georequests.get(old_url, 'provincias', campos='completo', orden='id', max=old_count)
     old_dict = {state['id']: state for state in old_response['provincias']}
@@ -228,26 +229,35 @@ def get_streets_data_diff(old_url, new_url):
     return diff_dict
 
 
-def compare_data(old_url, new_url):
+def generate_report_diff(old_url, new_url, entity='all'):
 
-    with open('diff_provincias.json', '+w') as f:
-        json.dump(get_states_data_diff(old_url, new_url), f)
+    def get_state_entity(old_url, new_url, entity):
+        if entity == 'provincias':
+            return get_provinces_data_diff(old_url, new_url)
+        elif entity == 'departamentos':
+            return get_departaments_data_diff(old_url, new_url)
+        elif entity == 'municipios':
+            return get_municipalities_data_diff(old_url, new_url)
+        elif entity == 'localidades-censales':
+            return get_census_localities_data_diff(old_url, new_url)
+        elif entity == 'asentamientos':
+            return get_settlements_data_diff(old_url, new_url)
+        elif entity == 'localidades':
+            return get_localities_data_diff(old_url, new_url)
+        elif entity == 'calles':
+            return get_streets_data_diff(old_url, new_url)
+        else:
+            raise NotImplemented()
 
-    with open('diff_departamentos.json', '+w') as f:
-        json.dump(get_departaments_data_diff(old_url, new_url), f)
+    entities = entity if entity != 'all' else [
+        'provincias', 'departamentos', 'municipios', 'localidades-censales', 'asentamientos', 'localidades', 'calles'
+    ]
 
-    with open('diff_municipios.json', '+w') as f:
-        json.dump(get_municipalities_data_diff(old_url, new_url), f)
-    #
-    with open('diff_localidades-censales.json', '+w') as f:
-        json.dump(get_census_localities_data_diff(old_url, new_url), f)
-    #
-    with open('diff_asentamientos.json', '+w') as f:
-        json.dump(get_settlements_data_diff(old_url, new_url), f)
-    #
-    with open('diff_localidades.json', '+w') as f:
-        json.dump(get_localities_data_diff(old_url, new_url), f)
-    #
-    with open('diff_calles.json', '+w') as f:
-        json.dump(get_streets_data_diff(old_url, new_url), f)
+    if isinstance(entities, str):
+        entities = [entity]
+
+    for entity in entities:
+        with open(f'diff_{entity}.json', '+w') as f:
+            json.dump(get_state_entity(old_url, new_url, entity), f)
+
 
