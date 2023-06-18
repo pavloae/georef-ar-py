@@ -10,6 +10,8 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ### Added
 
 - Archivo CHANGELOG.
+- Funciones para comparación de dos API's y generación de reportes
+- Implementación de logs
 
 ## [0.0.1] - 2023-04-28
 

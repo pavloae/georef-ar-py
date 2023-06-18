@@ -1,11 +1,19 @@
+import logging
 import unittest
+from unittest import TestCase
+
+import pytest as pytest
+from requests import RequestException
 
 from src.georef_ar_py import georequests
-from src.georef_ar_py.check import generate_report_diff
-from src.georef_ar_py.georequests import API_BASE_URL
+from src.georef_ar_py.georequests import get_json
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class MyTestCase(unittest.TestCase):
+
     def test_get_similar(self):
         response = georequests.get_similar('provincias', 'San Juan')
         self.assertEqual(response[0]['id'], '70')
@@ -30,12 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(location2['departamento_nombre'], 'Comuna 1')
 
 
-class CheckTestCase(unittest.TestCase):
-
-
-    def test_check_states(self):
-        generate_report_diff(API_BASE_URL, "http://52.23.185.155/georef/api/", entity='all')
-
-
-if __name__ == '__main__':
-    unittest.main()
+class Test(TestCase):
+    def test_get_json(self):
+        with pytest.raises(RequestException):
+            get_json(georequests.API_BASE_URL, 'paises')

@@ -5,9 +5,19 @@ import requests as requests
 API_BASE_URL = "https://apis.datos.gob.ar/georef/api/"
 
 
-def get(url, endpoint, **kwargs):
-    path = "{}{}?{}".format(url, endpoint, urllib.parse.urlencode(kwargs))
-    return requests.get(path).json()
+def get_json(url, endpoint, **kwargs):
+    """
+        Obtiene una respuesta como json para la entidad consultada.
+    :param url: URL de la API a consultar.
+    :param endpoint: nombre de una de las capas.
+    :param kwargs: parámetros de consulta.
+    :return: Un diccionario con la respuesta obtenida
+    """
+    with requests.get("{}{}".format(url, endpoint), params=kwargs) as req:
+        print(req.url)
+        if req.status_code == 200:
+            return req.json()
+        raise requests.RequestException(req)
 
 
 def get_similar(endpoint, nombre, **kwargs):

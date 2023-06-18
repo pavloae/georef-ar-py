@@ -1,1 +1,3 @@
-requests ~= 2.29
+requests==2.31.0
+deepdiff~=6.3.0
+pandas==2.0.2
