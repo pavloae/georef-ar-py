@@ -1,0 +1,288 @@
+{
+  "calles": [
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002320", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LAS VIRREYNAS", 
+      "nomenclatura": "LAS VIRREYNAS, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002325", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LAVALLE", 
+      "nomenclatura": "LAVALLE, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002440", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "MARTIN FIERRO", 
+      "nomenclatura": "MARTIN FIERRO, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002330", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LEANDRO N ALEM", 
+      "nomenclatura": "LEANDRO N ALEM, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002335", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LEROIR", 
+      "nomenclatura": "LEROIR, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002340", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LIDIA DE GINO", 
+      "nomenclatura": "LIDIA DE GINO, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002345", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LOPEZ Y PLANES", 
+      "nomenclatura": "LOPEZ Y PLANES, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002350", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LOS ALAMOS", 
+      "nomenclatura": "LOS ALAMOS, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002355", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LOS ANDES", 
+      "nomenclatura": "LOS ANDES, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "altura": {
+        "fin": {
+          "derecha": 0, 
+          "izquierda": 0
+        }, 
+        "inicio": {
+          "derecha": 0, 
+          "izquierda": 0
+        }
+      }, 
+      "categoria": "CALLE", 
+      "departamento": {
+        "id": "38063", 
+        "nombre": "San Pedro"
+      }, 
+      "id": "3806318002360", 
+      "localidad_censal": {
+        "id": "38063180", 
+        "nombre": "San Pedro"
+      }, 
+      "nombre": "LOS CLAVELES", 
+      "nomenclatura": "LOS CLAVELES, San Pedro, Jujuy", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }
+  ], 
+  "cantidad": 10, 
+  "inicio": 0, 
+  "parametros": {}, 
+  "total": 150054
+}

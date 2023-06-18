@@ -1,0 +1,258 @@
+{
+  "asentamientos": [
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -22.1346028583951, 
+        "lon": -65.4681564031582
+      }, 
+      "departamento": {
+        "id": "38112", 
+        "nombre": "Yavi"
+      }, 
+      "id": "3811208001", 
+      "localidad_censal": {
+        "id": "38112080", 
+        "nombre": "Yavi"
+      }, 
+      "municipio": {
+        "id": "386273", 
+        "nombre": "Yavi"
+      }, 
+      "nombre": "San José", 
+      "provincia": {
+        "id": "38", 
+        "nombre": "Jujuy"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -24.7831983811283, 
+        "lon": -65.4102509654276
+      }, 
+      "departamento": {
+        "id": "66028", 
+        "nombre": "Capital"
+      }, 
+      "id": "6602805003", 
+      "localidad_censal": {
+        "id": "66028050", 
+        "nombre": "Salta"
+      }, 
+      "municipio": {
+        "id": "660063", 
+        "nombre": "Salta"
+      }, 
+      "nombre": "Salta", 
+      "provincia": {
+        "id": "66", 
+        "nombre": "Salta"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -31.3968471082745, 
+        "lon": -64.0598690981123
+      }, 
+      "departamento": {
+        "id": "14014", 
+        "nombre": "Capital"
+      }, 
+      "id": "1401401002", 
+      "localidad_censal": {
+        "id": "14014010", 
+        "nombre": "Córdoba"
+      }, 
+      "municipio": {
+        "id": "140077", 
+        "nombre": "Córdoba"
+      }, 
+      "nombre": "La Floresta", 
+      "provincia": {
+        "id": "14", 
+        "nombre": "Córdoba"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -32.8673131267475, 
+        "lon": -68.779539700913
+      }, 
+      "departamento": {
+        "id": "50028", 
+        "nombre": "Guaymallén"
+      }, 
+      "id": "5002802001", 
+      "localidad_censal": {
+        "id": "50028020", 
+        "nombre": "Guaymallén"
+      }, 
+      "municipio": {
+        "id": "500028", 
+        "nombre": "Guaymallén"
+      }, 
+      "nombre": "Bermejo", 
+      "provincia": {
+        "id": "50", 
+        "nombre": "Mendoza"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.818755035018, 
+        "lon": -58.4233878258472
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801008", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Malvinas Argentinas", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.844020734727, 
+        "lon": -58.3627535292892
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801009", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Ministro Rivadavia", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.7973726678595, 
+        "lon": -58.3884529337359
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801001", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Adrogué", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.8281717078487, 
+        "lon": -58.391033876775
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801002", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Burzaco", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.7975588663845, 
+        "lon": -58.3352044170245
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801003", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Claypole", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "categoria": "Entidad", 
+      "centroide": {
+        "lat": -34.8192915430555, 
+        "lon": -58.3418543079073
+      }, 
+      "departamento": {
+        "id": "06028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "id": "0602801004", 
+      "localidad_censal": {
+        "id": "06028010", 
+        "nombre": "Almirante Brown"
+      }, 
+      "municipio": {
+        "id": "060028", 
+        "nombre": "Almirante Brown"
+      }, 
+      "nombre": "Don Orione", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }
+  ], 
+  "cantidad": 10, 
+  "inicio": 0, 
+  "parametros": {}, 
+  "total": 14673
+}

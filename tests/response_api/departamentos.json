@@ -1,0 +1,128 @@
+{
+  "cantidad": 10, 
+  "departamentos": [
+    {
+      "centroide": {
+        "lat": -31.2902983724746, 
+        "lon": -58.2378696898985
+      }, 
+      "id": "30015", 
+      "nombre": "Concordia", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -30.9924267798293, 
+        "lon": -58.8918600477175
+      }, 
+      "id": "30035", 
+      "nombre": "Federal", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -33.0223490410459, 
+        "lon": -58.7858051710614
+      }, 
+      "id": "30056", 
+      "nombre": "Gualeguaychú", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -33.6249961546235, 
+        "lon": -58.9338958542555
+      }, 
+      "id": "30063", 
+      "nombre": "Islas del Ibicuy", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -32.7839424597941, 
+        "lon": -60.2180700308372
+      }, 
+      "id": "30105", 
+      "nombre": "Victoria", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -32.228040549074, 
+        "lon": -60.5239335893593
+      }, 
+      "id": "30021", 
+      "nombre": "Diamante", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -32.4477599400377, 
+        "lon": -58.5842252100111
+      }, 
+      "id": "30098", 
+      "nombre": "Uruguay", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -31.6952294494901, 
+        "lon": -60.0411744815271
+      }, 
+      "id": "30084", 
+      "nombre": "Paraná", 
+      "provincia": {
+        "id": "30", 
+        "nombre": "Entre Ríos"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -35.676806451923, 
+        "lon": -59.7026607444531
+      }, 
+      "id": "06707", 
+      "nombre": "Saladillo", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -36.015826657022, 
+        "lon": -59.1764609497072
+      }, 
+      "id": "06455", 
+      "nombre": "Las Flores", 
+      "provincia": {
+        "id": "06", 
+        "nombre": "Buenos Aires"
+      }
+    }
+  ], 
+  "inicio": 0, 
+  "parametros": {}, 
+  "total": 529
+}

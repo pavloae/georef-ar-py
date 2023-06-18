@@ -14,7 +14,6 @@ def get_json(url, endpoint, **kwargs):
     :return: Un diccionario con la respuesta obtenida
     """
     with requests.get("{}{}".format(url, endpoint), params=kwargs) as req:
-        print(req.url)
         if req.status_code == 200:
             return req.json()
         raise requests.RequestException(req)

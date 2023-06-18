@@ -9,8 +9,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ### Added
 
+## [0.0.2] - 2023-06-18
+
+### Added
+
 - Archivo CHANGELOG.
+- Implementación de comandos de cli
 - Funciones para comparación de dos API's y generación de reportes
+- Implementación de generación de resumen de la API
 - Implementación de logs
 
 ## [0.0.1] - 2023-04-28
@@ -22,4 +28,5 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Tres funciones de consulta a la API tomadas de la documentación.
 
 [unreleased]: https://github.com/pavloae/georef-ar-py
+[0.0.2]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.2
 [0.0.1]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.1

@@ -1,0 +1,228 @@
+{
+  "cantidad": 10, 
+  "inicio": 0, 
+  "localidades_censales": [
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -27.921401190208, 
+        "lon": -65.8379274465406
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007010", 
+      "municipio": {
+        "id": "100028", 
+        "nombre": "Los Varela"
+      }, 
+      "nombre": "Chuchucaruana", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.0584819543014, 
+        "lon": -65.8137406100675
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007020", 
+      "municipio": {
+        "id": "100014", 
+        "nombre": "La Puerta"
+      }, 
+      "nombre": "Colpes", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -27.9034866965853, 
+        "lon": -65.8796316883808
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007030", 
+      "municipio": {
+        "id": "100028", 
+        "nombre": "Los Varela"
+      }, 
+      "nombre": "El Bolsón", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.2141516424861, 
+        "lon": -65.8738600634115
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007040", 
+      "municipio": {
+        "id": "100007", 
+        "nombre": "El Rodeo"
+      }, 
+      "nombre": "El Rodeo", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.1233967130035, 
+        "lon": -65.7966563124466
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007050", 
+      "municipio": {
+        "id": "100014", 
+        "nombre": "La Puerta"
+      }, 
+      "nombre": "Huaycama", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.2332733675236, 
+        "lon": -65.7612255302761
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007055", 
+      "municipio": {
+        "id": "100014", 
+        "nombre": "La Puerta"
+      }, 
+      "nombre": "Isla Larga", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.1626587737167, 
+        "lon": -65.7925474524669
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007060", 
+      "municipio": {
+        "id": "100014", 
+        "nombre": "La Puerta"
+      }, 
+      "nombre": "La Puerta", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -27.6849875494067, 
+        "lon": -65.9259187311532
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007070", 
+      "municipio": {
+        "id": "100028", 
+        "nombre": "Los Varela"
+      }, 
+      "nombre": "Las Chacritas", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -28.10297104946, 
+        "lon": -65.8983349848346
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007080", 
+      "municipio": {
+        "id": "100021", 
+        "nombre": "Las Juntas"
+      }, 
+      "nombre": "Las Juntas", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }, 
+    {
+      "categoria": "Localidad simple", 
+      "centroide": {
+        "lat": -27.9582295650792, 
+        "lon": -65.820685723313
+      }, 
+      "departamento": {
+        "id": "10007", 
+        "nombre": "Ambato"
+      }, 
+      "funcion": null, 
+      "id": "10007090", 
+      "municipio": {
+        "id": "100028", 
+        "nombre": "Los Varela"
+      }, 
+      "nombre": "Los Castillos", 
+      "provincia": {
+        "id": "10", 
+        "nombre": "Catamarca"
+      }
+    }
+  ], 
+  "parametros": {}, 
+  "total": 4027
+}

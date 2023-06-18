@@ -1,29 +1,15 @@
 import json
 import logging
-import os.path
 import re
 
 import pandas as pd
 from deepdiff import DeepDiff
-from requests import RequestException
 
 from . import constants
 from .georequests import get_json
+from .info import get_entity_number, get_departments_ids
 
 log = logging.getLogger(__name__)
-
-
-def get_departments_ids(url, state=None):
-    kwargs = {'campos': 'basico', 'orden': 'id', 'max': 5000}
-    if state:
-        kwargs.update({'provincia': state})
-
-    response = {'reason': 'Unknown'}
-    try:
-        response = get_json(url, 'departamentos', **kwargs)
-        return [department['id'] for department in response['departamentos']]
-    except KeyError:
-        raise RequestException(response)
 
 
 class DiffEntity:
@@ -45,11 +31,11 @@ class DiffEntity:
         self._target_registers = None
         self._diff_dict = None
 
-    def _get_total_entity_number(self, url, **kwargs):
-        return self._get_response(url, campos='basico', max=1, **kwargs)['total']
-
     def _get_max_entity_number(self):
-        return max(self._get_total_entity_number(self._src_url), self._get_total_entity_number(self._target_url))
+        return max(
+            get_entity_number(self._src_url, self._entity),
+            get_entity_number(self._target_url, self._entity)
+        )
 
     @property
     def max_registries(self):
@@ -62,7 +48,7 @@ class DiffEntity:
         self._max_registries = 5000
         sum_dict = {}
         for state_id in constants.PROVINCES_DICT.keys():
-            max_streets_province = self._get_total_entity_number(url, provincia=state_id)
+            max_streets_province = get_entity_number(url, self._entity, provincia=state_id)
             if max_streets_province <= 5000:
                 part_dict = self._get_response(
                     url, campos='completo', orden='id', max=self.max_registries,
@@ -80,22 +66,26 @@ class DiffEntity:
         return sum_dict
 
     def _get_response(self, url, **kwargs):
-        return get_json(url, self._entity, campos='completo', orden='id', max=self.max_registries, **kwargs)
+        return get_json(url, self._entity, **kwargs)
 
     def _get_registers(self, url, **kwargs):
         log.debug(f"Obteniendo registros de {url}")
         return {entity['id']: entity for entity in self._get_response(url, **kwargs)[self._entity_key]}
 
     @property
-    def src_registers(self, **kwargs):
+    def src_registers(self):
         if not self._src_registers:
-            self._src_registers = self._get_registers(self._src_url, **kwargs)
+            self._src_registers = self._get_registers(
+                self._src_url, campos="completo", orden="id", max=self.max_registries
+            )
         return self._src_registers
 
     @property
-    def target_registers(self, **kwargs):
+    def target_registers(self):
         if not self._target_registers:
-            self._target_registers = self._get_registers(self._target_url, **kwargs)
+            self._target_registers = self._get_registers(
+                self._target_url, campos="completo", orden="id", max=self.max_registries
+            )
         return self._target_registers
 
     def _get_diff_as_dict(self):
@@ -158,7 +148,7 @@ class DiffEntity:
 
         diff_df = pd.DataFrame.from_dict(diff_dict, orient='index')
 
-        diff_df.to_csv(filename)
+        diff_df.to_csv(filename, index_label='id')
 
         log.debug(f"Archivo generado: {filename}")
 
@@ -175,7 +165,7 @@ class DiffStreet(DiffEntity):
         return self._get_registers_by_region(url, **kwargs)
 
 
-def get_diff_entity(src_url, target_url, entity):
+def get_diff_object(src_url, target_url, entity):
     if entity in ['provincias', 'departamentos', 'municipios', 'localidades']:
         return DiffEntity(entity, src_url, target_url)
     elif entity == 'localidades-censales':
@@ -188,29 +178,3 @@ def get_diff_entity(src_url, target_url, entity):
     elif entity == 'calles':
         return DiffStreet(entity, src_url, target_url)
     raise NotImplemented(f'La capa {entity} no se encuentra implementada')
-
-
-def generate_report_diff(path_dir, src_url, target_url, layer='all', ext=None):
-
-    if ext and ext not in ['json', 'csv', 'both']:
-        raise NotImplemented(f'La extensión {ext} no está implementada.')
-
-    entities = layer if layer != 'all' else constants.ENTITIES
-
-    if isinstance(entities, str):
-        entities = [layer]
-
-    for layer in entities:
-        log.debug(f'Procesando la capa "{layer}"')
-
-        try:
-            diff_entity = get_diff_entity(src_url, target_url, layer)
-            if not ext:
-                diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
-                diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
-            elif ext == 'json':
-                diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
-            else:
-                diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
-        except RequestException as rqe:
-            log.error(f'No se pudo procesar la petición {rqe.request}')

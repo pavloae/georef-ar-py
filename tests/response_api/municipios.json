@@ -1,0 +1,128 @@
+{
+  "cantidad": 10, 
+  "inicio": 0, 
+  "municipios": [
+    {
+      "centroide": {
+        "lat": -37.0165690501283, 
+        "lon": -70.9189491616615
+      }, 
+      "id": "585098", 
+      "nombre": "Villa del Nahueve", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -29.988028807828, 
+        "lon": -60.8529461195038
+      }, 
+      "id": "823477", 
+      "nombre": "Aguará Grande", 
+      "provincia": {
+        "id": "82", 
+        "nombre": "Santa Fe"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -37.2627225951776, 
+        "lon": -70.6130162430231
+      }, 
+      "id": "580140", 
+      "nombre": "Andacollo", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -28.8485702161662, 
+        "lon": -59.3466108834064
+      }, 
+      "id": "822833", 
+      "nombre": "Las Garzas", 
+      "provincia": {
+        "id": "82", 
+        "nombre": "Santa Fe"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -37.4558329459089, 
+        "lon": -70.6873431812617
+      }, 
+      "id": "580175", 
+      "nombre": "El Cholar", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -37.6497782492166, 
+        "lon": -70.5833484818072
+      }, 
+      "id": "580182", 
+      "nombre": "El Huecú", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -37.5910001035078, 
+        "lon": -70.3458343954121
+      }, 
+      "id": "580189", 
+      "nombre": "Taquimilán", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -38.130763669743, 
+        "lon": -70.6070114096582
+      }, 
+      "id": "580126", 
+      "nombre": "Loncopué", 
+      "provincia": {
+        "id": "58", 
+        "nombre": "Neuquén"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -31.2949655515129, 
+        "lon": -60.8134512895744
+      }, 
+      "id": "823008", 
+      "nombre": "Nelson", 
+      "provincia": {
+        "id": "82", 
+        "nombre": "Santa Fe"
+      }
+    }, 
+    {
+      "centroide": {
+        "lat": -43.5131646424365, 
+        "lon": -70.8303282871378
+      }, 
+      "id": "260105", 
+      "nombre": "Tecka", 
+      "provincia": {
+        "id": "26", 
+        "nombre": "Chubut"
+      }
+    }
+  ], 
+  "parametros": {}, 
+  "total": 2075
+}
