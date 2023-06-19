@@ -4,7 +4,6 @@ import unittest
 from unittest import mock
 
 from src.georef_ar_py.diff import get_diff_object, DiffEntity
-from src.georef_ar_py.georequests import API_BASE_URL
 
 
 def get_mocked_response(url, entity, **kwargs):
@@ -25,6 +24,10 @@ def get_mocked_response(url, entity, **kwargs):
     return data
 
 
+def get_mocked_entity_number(url, entity, **kwargs):
+    return get_mocked_response(url, entity)['total']
+
+
 class DiffTestCase(unittest.TestCase):
     """
         Agrega tests para verificar la cantidad de entidades en cada capa y el correcto funcionamiento de la clase DiffEntity
@@ -40,8 +43,10 @@ class DiffTestCase(unittest.TestCase):
         self.src_url = "http://52.23.185.155/georef/api/"
         self.target_url = "http://52.23.185.155/georef/api/"
 
-    @mock.patch('src.georef_ar_py.georequests.get_json')
-    def test_diff_provinces(self, mock_method):
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch.object(DiffEntity, "_get_response")
+    def test_diff_provinces(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "provincias")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'provincias')
@@ -50,8 +55,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(24, len(diff_entity.target_registers))
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_departments(self, mock_method):
+    def test_diff_departments(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "departamentos")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'departamentos')
@@ -60,8 +67,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(len(diff_entity.target_registers), 10)
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_municipalities(self, mock_method):
+    def test_diff_municipalities(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "municipios")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'municipios')
@@ -70,8 +79,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(len(diff_entity.target_registers), 10)
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_census_localities(self, mock_method):
+    def test_diff_census_localities(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "localidades-censales")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'localidades-censales')
@@ -80,8 +91,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(len(diff_entity.target_registers), 10)
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
-    def test_diff_settlements(self, mock_method):
+    def test_diff_settlements(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "asentamientos")['asentamientos']
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'asentamientos')
@@ -90,8 +103,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(len(diff_entity.target_registers), 10)
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_localities(self, mock_method):
+    def test_diff_localities(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "localidades")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'localidades')
@@ -100,8 +115,10 @@ class DiffTestCase(unittest.TestCase):
         self.assertEqual(len(diff_entity.target_registers), 10)
         self.assertEqual({}, diff_entity._get_diff_as_dict())
 
+    @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
-    def test_diff_streets(self, mock_method):
+    def test_diff_streets(self, mock_method, mock_entity_number):
+        mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "calles")['calles']
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'calles')

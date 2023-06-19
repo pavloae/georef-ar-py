@@ -5,6 +5,7 @@ import os
 import click
 from requests import RequestException
 
+from . import georequests
 from .constants import ENTITIES
 from .diff import get_diff_object
 from .georequests import API_BASE_URL
@@ -25,7 +26,8 @@ def cli():
 @cli.command()
 @click.argument('url', type=str)
 @click.option('--origin_url', required=False, type=str, show_default=True, default=API_BASE_URL)
-@click.option('--layer', required=False, type=click.Choice(ENTITIES, case_sensitive=True), show_default=True, default="all")
+@click.option('--token', required=False, type=str, show_default=True, default=None)
+@click.option('--layer', required=False, type=click.Choice(ENTITIES, case_sensitive=True), show_default=True, default=None)
 @click.option('--extension', required=False, type=click.Choice(['json', 'csv', 'both'], case_sensitive=True), show_default=True, default="both")
 @click.option('--debug', is_flag=True, show_default=False)
 def diff(*args, **kwargs):
@@ -42,16 +44,17 @@ def diff(*args, **kwargs):
     log.info("Comenzando la generación de diferencias...")
 
     src_url = kwargs.pop('origin_url')
-    target_url = kwargs.pop('t')
+    target_url = kwargs.pop('url')
     ext = kwargs.pop('extension')
     layer = kwargs.pop('layer')
+    georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
     path_dir = os.getcwd()
 
     if ext and ext not in ['json', 'csv', 'both']:
         raise NotImplemented(f'La extensión {ext} no está implementada.')
 
-    entities = layer if layer != 'all' else ENTITIES
+    entities = layer if layer else ENTITIES
 
     if isinstance(entities, str):
         entities = [layer]
@@ -74,6 +77,7 @@ def diff(*args, **kwargs):
 
 @cli.command()
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
+@click.option('--token', required=False, type=str, show_default=True, default=None)
 @click.option('--debug', is_flag=True, show_default=False)
 def info(*args, **kwargs):
     """
@@ -88,6 +92,7 @@ def info(*args, **kwargs):
     log.info("Comenzando la generación del resumen...")
 
     target_url = kwargs.pop('url')
+    georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
     resume = get_resume(target_url)
 

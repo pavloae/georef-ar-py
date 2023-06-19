@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 class DiffEntity:
     def __init__(
             self, entity, src_url, target_url, entity_key=None, max_registries=None,
-            ignore_order=True, significant_digits=1, exclude_paths=None, exclude_regex_paths=None
+            ignore_order=True, significant_digits=1, exclude_paths=None, exclude_regex_paths=None, **kwargs
     ) -> None:
         super().__init__()
         self._entity = entity
@@ -30,62 +30,71 @@ class DiffEntity:
         self._src_registers = None
         self._target_registers = None
         self._diff_dict = None
-
-    def _get_max_entity_number(self):
-        return max(
-            get_entity_number(self._src_url, self._entity),
-            get_entity_number(self._target_url, self._entity)
-        )
-
-    @property
-    def max_registries(self):
-        if not self._max_registries:
-            self._max_registries = self._get_max_entity_number()
-        return self._max_registries
-
-    def _get_registers_by_region(self, url, **kwargs):
-        log.debug(f"Obteniendo registros de {url}")
-        self._max_registries = 5000
-        sum_dict = {}
-        for state_id in constants.PROVINCES_DICT.keys():
-            max_streets_province = get_entity_number(url, self._entity, provincia=state_id)
-            if max_streets_province <= 5000:
-                part_dict = self._get_response(
-                    url, campos='completo', orden='id', max=self.max_registries,
-                    provincia=state_id, **kwargs
-                )
-                sum_dict.update({entity['id']: entity for entity in part_dict[self._entity_key]})
-            else:
-                for dep_id in get_departments_ids(url, state_id):
-                    part_dict = self._get_response(
-                        url, campos='completo', orden='id', max=self.max_registries,
-                        departamento=dep_id, **kwargs
-                    )
-                    sum_dict.update({entity['id']: entity for entity in part_dict[self._entity_key]})
-
-        return sum_dict
+        self._limit = kwargs.get('limit', 5000)
+        self._max_src = None
+        self._max_target = None
 
     def _get_response(self, url, **kwargs):
         return get_json(url, self._entity, **kwargs)
+
+    @property
+    def max_src(self):
+        if not self._max_src:
+            self._max_src = get_entity_number(self._src_url, self._entity)
+        return self._max_src
+
+    @property
+    def max_target(self):
+        if not self._max_target:
+            self._max_target = get_entity_number(self._target_url, self._entity)
+        return self._max_target
+
+    def _get_max_entity_number(self):
+        return max(self.max_src, self.max_target)
 
     def _get_registers(self, url, **kwargs):
         log.debug(f"Obteniendo registros de {url}")
         return {entity['id']: entity for entity in self._get_response(url, **kwargs)[self._entity_key]}
 
+    def _get_registers_by_region(self, url, **kwargs):
+        log.debug(f"Obteniendo registros de {url}")
+        limit = kwargs.get('max', self._limit)
+
+        params = {'campos': 'completo', 'orden': 'id', 'max': limit}
+
+        item_dict = {}
+        for state_id in constants.PROVINCES_DICT.keys():
+            max_items_province = get_entity_number(url, self._entity, provincia=state_id)
+            if max_items_province <= limit:
+                log.info(f"Consultando {self._entity}:provincia[{state_id}]")
+                params.pop('departamento', None)
+                params.update({'provincia': state_id})
+                item_dict.update(self._get_registers(url, **params))
+            else:
+                for dep_id in get_departments_ids(url, state_id):
+                    log.info(f"Consultando {self._entity}:departamento[{dep_id}]")
+                    params.pop('provincia', None)
+                    params.update({'departamento': dep_id})
+                    item_dict.update(self._get_registers(url, **params))
+
+        return item_dict
+
     @property
     def src_registers(self):
         if not self._src_registers:
-            self._src_registers = self._get_registers(
-                self._src_url, campos="completo", orden="id", max=self.max_registries
-            )
+            if self.max_src < self._limit:
+                self._src_registers = self._get_registers(self._src_url, campos="completo", orden="id", max=self._limit)
+            else:
+                self._src_registers = self._get_registers_by_region(self._src_url)
         return self._src_registers
 
     @property
     def target_registers(self):
         if not self._target_registers:
-            self._target_registers = self._get_registers(
-                self._target_url, campos="completo", orden="id", max=self.max_registries
-            )
+            if self.max_target < self._limit:
+                self._target_registers = self._get_registers(self._target_url, campos="completo", orden="id", max=self._limit)
+            else:
+                self._target_registers = self._get_registers_by_region(self._target_url)
         return self._target_registers
 
     def _get_diff_as_dict(self):
@@ -153,28 +162,12 @@ class DiffEntity:
         log.debug(f"Archivo generado: {filename}")
 
 
-class DiffSettlement(DiffEntity):
-
-    def _get_registers(self, url, **kwargs):
-        return self._get_registers_by_region(url, **kwargs)
-
-
-class DiffStreet(DiffEntity):
-
-    def _get_registers(self, url, **kwargs):
-        return self._get_registers_by_region(url, **kwargs)
-
-
 def get_diff_object(src_url, target_url, entity):
-    if entity in ['provincias', 'departamentos', 'municipios', 'localidades']:
+    if entity in ['provincias', 'departamentos', 'municipios', 'asentamientos', 'localidades', 'calles']:
         return DiffEntity(entity, src_url, target_url)
     elif entity == 'localidades-censales':
         return DiffEntity(
             entity, src_url, target_url, entity_key='localidades_censales',
-            exclude_regex_paths=r"root\['\d+']\['centroide'\]"
+            exclude_regex_paths=None  # r"root\['\d+']\['centroide'\]"
         )
-    elif entity == 'asentamientos':
-        return DiffSettlement(entity, src_url, target_url)
-    elif entity == 'calles':
-        return DiffStreet(entity, src_url, target_url)
     raise NotImplemented(f'La capa {entity} no se encuentra implementada')

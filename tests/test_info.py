@@ -7,7 +7,7 @@ from src.georef_ar_py.georequests import API_BASE_URL
 
 class Test(TestCase):
 
-    @mock.patch('src.georef_ar_py.georequests.get_json')
+    @mock.patch('src.georef_ar_py.info.get_json')
     def test_get_entity_number(self, get_response_mock):
 
         get_response_mock.side_effect = tests.test_diff.get_mocked_response
@@ -26,7 +26,7 @@ class Test(TestCase):
 
         self.assertEqual(150054, info.get_entity_number(API_BASE_URL, 'calles'))
 
-    @mock.patch('src.georef_ar_py.georequests.get_json')
+    @mock.patch('src.georef_ar_py.info.get_json')
     def test_get_resume(self, get_response_mock):
 
         get_response_mock.side_effect = tests.test_diff.get_mocked_response

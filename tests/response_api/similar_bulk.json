@@ -1,0 +1,1 @@
+{"resultados": [{"cantidad": 0, "inicio": 0, "parametros": {"max": 1, "nombre": "pxa"}, "provincias": [], "total": 0}, {"cantidad": 1, "inicio": 0, "parametros": {"max": 1, "nombre": "sant fe"}, "provincias": [{"centroide": {"lat": -30.7069271588117, "lon": -60.9498369430241}, "id": "82", "nombre": "Santa Fe"}], "total": 1}]}

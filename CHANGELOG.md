@@ -9,6 +9,15 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ### Added
 
+## [0.0.3] - 2023-06-19
+
+### Added
+
+- Implementa token en headers
+- Corrige argumento en la línea de comandos
+- Corrige bugs en la consulta por regiones y otros
+- Modularización de algunas funciones
+
 ## [0.0.2] - 2023-06-18
 
 ### Added
@@ -28,5 +37,6 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Tres funciones de consulta a la API tomadas de la documentación.
 
 [unreleased]: https://github.com/pavloae/georef-ar-py
+[0.0.3]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.3
 [0.0.2]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.2
 [0.0.1]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.1
