@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -94,8 +95,9 @@ def info(*args, **kwargs):
     target_url = kwargs.pop('url')
     georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
-    resume = get_resume(target_url)
+    resume = asyncio.run(get_resume(target_url))
 
     filename = os.path.join(os.getcwd(), 'info.json')
+    log.info(f"Guardando archivo en {filename}")
     with open(filename, '+w') as f:
         json.dump(resume, f)
