@@ -1,14 +1,14 @@
 import asyncio
+import concurrent.futures
 import json
 import logging
 import os
 
 import click
-from requests import RequestException
 
 from . import georequests
 from .constants import ENTITIES
-from .diff import get_diff_object
+from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
 
@@ -60,20 +60,9 @@ def diff(*args, **kwargs):
     if isinstance(entities, str):
         entities = [layer]
 
-    for layer in entities:
-        log.info(f'Procesando la capa "{layer}"')
-
-        try:
-            diff_entity = get_diff_object(src_url, target_url, layer)
-            if ext == 'both':
-                diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
-                diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
-            elif ext == 'json':
-                diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
-            else:
-                diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
-        except RequestException as rqe:
-            log.error(f'No se pudo procesar la petición {rqe.request}')
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        for entity in entities:
+            executor.submit(process, src_url, target_url, entity, path_dir, ext)
 
 
 @cli.command()

@@ -1,12 +1,16 @@
+import asyncio
 import json
 import logging
+import os
 import re
 
+import aiohttp
 import pandas as pd
 from deepdiff import DeepDiff
+from requests import RequestException
 
 from . import constants
-from .georequests import get_json
+from .georequests import get_json_async
 from .info import get_entity_number, get_departments_ids
 
 log = logging.getLogger(__name__)
@@ -34,8 +38,8 @@ class DiffEntity:
         self._max_src = None
         self._max_target = None
 
-    def _get_response(self, url, **kwargs):
-        return get_json(url, self._entity, **kwargs)
+    async def _get_response(self, session, url, **kwargs):
+        return await get_json_async(session, url, self._entity, **kwargs)
 
     @property
     def max_src(self):
@@ -49,57 +53,72 @@ class DiffEntity:
             self._max_target = get_entity_number(self._target_url, self._entity)
         return self._max_target
 
-    def _get_max_entity_number(self):
-        return max(self.max_src, self.max_target)
-
-    def _get_registers(self, url, **kwargs):
+    async def _get_registers(self, session, url, **kwargs):
         log.debug(f"Obteniendo registros de {url}")
-        return {entity['id']: entity for entity in self._get_response(url, **kwargs)[self._entity_key]}
+        try:
+            response = await self._get_response(session, url, **kwargs)
+            return {entity['id']: entity for entity in response[self._entity_key]}
+        except asyncio.CancelledError:
+            log.error(f"Cancelando la descarga de {url}")
 
-    def _get_registers_by_region(self, url, **kwargs):
+    async def _get_registers_by_region(self, session, url, **kwargs):
         log.debug(f"Obteniendo registros de {url}")
         limit = kwargs.get('max', self._limit)
 
         params = {'campos': 'completo', 'orden': 'id', 'max': limit}
 
-        item_dict = {}
+        subtasks = []
         for state_id in constants.PROVINCES_DICT.keys():
             max_items_province = get_entity_number(url, self._entity, provincia=state_id)
             if max_items_province <= limit:
                 log.info(f"Consultando {self._entity}:provincia[{state_id}]")
                 params.pop('departamento', None)
                 params.update({'provincia': state_id})
-                item_dict.update(self._get_registers(url, **params))
+                subtasks.append(self._get_registers(session, url, **params))
             else:
                 for dep_id in get_departments_ids(url, state_id):
                     log.info(f"Consultando {self._entity}:departamento[{dep_id}]")
                     params.pop('provincia', None)
                     params.update({'departamento': dep_id})
-                    item_dict.update(self._get_registers(url, **params))
+                    subtasks.append(self._get_registers(session, url, **params))
 
-        return item_dict
+        responses = await asyncio.gather(*subtasks)
 
-    @property
-    def src_registers(self):
+        return {key: value for response in responses for key, value in response.items()}
+
+    async def get_src_registers(self, session):
         if not self._src_registers:
             if self.max_src < self._limit:
-                self._src_registers = self._get_registers(self._src_url, campos="completo", orden="id", max=self._limit)
+                self._src_registers = await self._get_registers(
+                    session, self._src_url, campos="completo", orden="id", max=self._limit
+                )
             else:
-                self._src_registers = self._get_registers_by_region(self._src_url)
+                self._src_registers = await self._get_registers_by_region(session, self._src_url)
+        print(f"source size: {len(self._src_registers)}")
         return self._src_registers
 
-    @property
-    def target_registers(self):
+    async def get_target_registers(self, session):
         if not self._target_registers:
             if self.max_target < self._limit:
-                self._target_registers = self._get_registers(self._target_url, campos="completo", orden="id", max=self._limit)
+                self._target_registers = await self._get_registers(
+                    session, self._target_url, campos="completo", orden="id", max=self._limit
+                )
             else:
-                self._target_registers = self._get_registers_by_region(self._target_url)
+                self._target_registers = await self._get_registers_by_region(session, self._target_url)
+        print(f"target size: {len(self._target_registers)}")
         return self._target_registers
 
-    def _get_diff_as_dict(self):
+    async def _get_diff_as_dict(self):
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                registers = await asyncio.gather(self.get_src_registers(session), self.get_target_registers(session))
+                log.info(f"Recursos descargados")
+            except Exception:
+                log.error(f"Descarga de recursos cancelada!")
+
         return DeepDiff(
-            self.src_registers, self.target_registers,
+            *registers,
             ignore_order=self._ignore_order, significant_digits=self._significant_digits,
             exclude_paths=self._exclude_paths, exclude_regex_paths=self._exclude_regex_paths
         )
@@ -107,7 +126,7 @@ class DiffEntity:
     @property
     def diff_dict(self):
         if not self._diff_dict:
-            self._diff_dict = self._get_diff_as_dict()
+            self._diff_dict = asyncio.run(self._get_diff_as_dict())
         return self._diff_dict
 
     def diff_as_json(self, filename):
@@ -171,3 +190,17 @@ def get_diff_object(src_url, target_url, entity):
             exclude_regex_paths=None  # r"root\['\d+']\['centroide'\]"
         )
     raise NotImplemented(f'La capa {entity} no se encuentra implementada')
+
+
+def process(src_url, target_url, layer, path_dir, ext):
+    try:
+        diff_entity = get_diff_object(src_url, target_url, layer)
+        if ext == 'both':
+            diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
+            diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
+        elif ext == 'json':
+            diff_entity.diff_as_json(os.path.join(path_dir, f'diff_{layer}.json'))
+        else:
+            diff_entity.diff_as_csv(os.path.join(path_dir, f'diff_{layer}.csv'))
+    except RequestException as rqe:
+        logging.error(f'No se pudo procesar la petición {rqe.request}')

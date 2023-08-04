@@ -28,7 +28,7 @@ def get_mocked_entity_number(url, entity, **kwargs):
     return get_mocked_response(url, entity)['total']
 
 
-class DiffTestCase(unittest.TestCase):
+class DiffTestCase(unittest.IsolatedAsyncioTestCase):
     """
         Agrega tests para verificar la cantidad de entidades en cada capa y el correcto funcionamiento de la clase DiffEntity
     """
@@ -45,84 +45,126 @@ class DiffTestCase(unittest.TestCase):
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_provinces(self, mock_method, mock_entity_number):
+    async def test_diff_provinces(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "provincias")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'provincias')
 
-        self.assertEqual(24, len(diff_entity.src_registers))
-        self.assertEqual(24, len(diff_entity.target_registers))
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(24, len(src_registers))
+        self.assertEqual(24, len(target_registers))
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_departments(self, mock_method, mock_entity_number):
+    async def test_diff_departments(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "departamentos")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'departamentos')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_municipalities(self, mock_method, mock_entity_number):
+    async def test_diff_municipalities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "municipios")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'municipios')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_census_localities(self, mock_method, mock_entity_number):
+    async def test_diff_census_localities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "localidades-censales")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'localidades-censales')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
-    def test_diff_settlements(self, mock_method, mock_entity_number):
+    async def test_diff_settlements(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "asentamientos")['asentamientos']
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'asentamientos')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
-    def test_diff_localities(self, mock_method, mock_entity_number):
+    async def test_diff_localities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "localidades")
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'localidades')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
-    def test_diff_streets(self, mock_method, mock_entity_number):
+    async def test_diff_streets(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
         mock_method.return_value = get_mocked_response(self.target_url, "calles")['calles']
 
         diff_entity = get_diff_object(self.src_url, self.target_url, 'calles')
 
-        self.assertEqual(len(diff_entity.src_registers), 10)
-        self.assertEqual(len(diff_entity.target_registers), 10)
-        self.assertEqual({}, diff_entity._get_diff_as_dict())
+        src_registers = await diff_entity.get_src_registers(None)
+        target_registers = await diff_entity.get_src_registers(None)
+
+        self.assertEqual(len(src_registers), 10)
+        self.assertEqual(len(target_registers), 10)
+
+        diff_dict = await diff_entity._get_diff_as_dict()
+
+        self.assertEqual({}, diff_dict)
