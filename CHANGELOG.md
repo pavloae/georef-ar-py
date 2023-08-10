@@ -9,6 +9,13 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ### Added
 
+## [0.0.4] - 2023-08-10
+
+### Added
+
+- Implementa asincronismo en las consultas
+- Implementa multiprocesamiento en la generación de informes
+
 ## [0.0.3] - 2023-06-19
 
 ### Added
