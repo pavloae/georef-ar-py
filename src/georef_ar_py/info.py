@@ -9,7 +9,10 @@ log = logging.getLogger(__name__)
 
 
 async def _get_response(session, url, entity, **kwargs):
-    return await get_json_async(session, url, entity, **kwargs)
+    try:
+        return await get_json_async(session, url, entity, **kwargs)
+    except asyncio.CancelledError:
+        log.error(f"Cancelando la descarga de {url}")
 
 
 def get_entity_number(url, entity, **kwargs):
