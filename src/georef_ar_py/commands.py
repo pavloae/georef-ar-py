@@ -11,6 +11,7 @@ from .constants import ENTITIES
 from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
+from .normalization import normalize_address, csv_to_csv
 
 
 def get_logger(level):
@@ -90,3 +91,63 @@ def info(*args, **kwargs):
     log.info(f"Guardando archivo en {filename}")
     with open(filename, '+w') as f:
         json.dump(resume, f)
+
+
+@cli.command()
+@click.argument('address', type=str)
+@click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
+@click.option('--token', required=False, type=str, show_default=True, default=None)
+@click.option('--provincia', required=False, type=str, show_default=True, default=None)
+@click.option('--departamento', required=False, type=str, show_default=True, default=None)
+@click.option('--localidad_censal', required=False, type=str, show_default=True, default=None)
+@click.option('--localidad', required=False, type=str, show_default=True, default=None)
+@click.option('--debug', is_flag=True, show_default=False)
+def normalize(*args, **kwargs):
+    """
+    geoarpy normalize Commandline
+
+    Dada una direccion suministra la misma normalizada (nomenclatura) o no devuelve nada si no se pudo normalizar
+
+    url es el path a la API destino que se quiere consultar.
+    """
+    debug = kwargs.pop('debug')
+    get_logger(logging.DEBUG if debug else logging.INFO)
+
+    target_url = kwargs.pop('url')
+    georequests.__dict__['TOKEN'] = kwargs.pop('token')
+
+    address = kwargs.pop('address')
+
+    address_normalized = normalize_address(address, target_url, campos='basico', max=1, **kwargs)
+
+    print(address_normalized)
+
+
+@cli.command()
+@click.argument('input', type=click.File('rb'))
+@click.argument('output', type=click.File('wb'))
+@click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
+@click.option('--token', required=False, type=str, show_default=True, default=None)
+@click.option('--prefix', required=False, type=str, show_default=True, default='norm')
+@click.option('--debug', is_flag=True, show_default=False)
+def batch_normalize(input, output, **kwargs):
+    """
+    geoarpy batch normalize Commandline
+
+    Normaliza un archivo csv con direcciones.
+     Se suminstra un archivo (INPUT) y se leen las direcciones bajo el encabezado "direccion".
+     Optativamente, se pueden suministrar columnas con información extra bajo los siguientes encabezados:
+        "localidad_censal", "localidad", "departamento", "provincia"
+    Escribe los resultados a un archivo csv (OUTPUT)
+
+    url es el path a la API destino que se quiere consultar.
+    """
+    debug = kwargs.pop('debug')
+    get_logger(logging.DEBUG if debug else logging.INFO)
+
+    target_url = kwargs.pop('url')
+    georequests.__dict__['TOKEN'] = kwargs.pop('token')
+
+    prefix = kwargs.pop('prefix')
+
+    csv_to_csv(input, output, target_url, max=1, prefix=prefix)

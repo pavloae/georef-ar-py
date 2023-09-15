@@ -42,7 +42,6 @@ def get_json_post(url, endpoint, data, **kwargs):
         headers.update({'Authorization': 'Bearer {}'.format(TOKEN)})
 
     with requests.post("{}{}".format(url, endpoint), json=data, headers=headers) as req:
-        print(req.request.url)
         if req.status_code == 200:
             return req.json()
         raise requests.RequestException(req)
