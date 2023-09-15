@@ -9,6 +9,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ### Added
 
+## [0.0.5] - 2023-09-15
+
+### Added
+
+- Implementa la normalización de direcciones, simple y por lote
+
 ## [0.0.4] - 2023-08-10
 
 ### Added

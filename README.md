@@ -22,8 +22,11 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  diff  georef-ar-py diff Commandline
-  info  georef-ar-py diff Commandline
+  batch-normalize  geoarpy batch normalize Commandline
+  diff             geoarpy diff Commandline
+  info             geoarpy info Commandline
+  normalize        geoarpy normalize Commandline
+
 
 ```
 
@@ -83,3 +86,62 @@ Comparar los datos de una API propia contra la API oficial
 Comparar los datos entre dos API's
 
 `geoarpy diff "http://mi-api_1.ar/georef/api/" --origin-url "http://mi-api_2.ar/georef/api/"`
+
+### Normalizar una dirección (Obtener la nomenclatura)
+
+```
+Usage: geoarpy normalize [OPTIONS] ADDRESS
+
+  geoarpy normalize Commandline
+
+  Dada una direccion suministra la misma normalizada (nomenclatura) o no
+  devuelve nada si no se pudo normalizar
+
+  url es el path a la API destino que se quiere consultar.
+
+Options:
+  --url TEXT               [default: https://apis.datos.gob.ar/georef/api/]
+  --token TEXT
+  --provincia TEXT
+  --departamento TEXT
+  --localidad_censal TEXT
+  --localidad TEXT
+  --debug
+  --help                   Show this message and exit.
+```
+
+Comparar los datos de una API propia contra la API oficial
+
+`geoarpy normalize "feliz san martín 390" --localidad_censal="junin de los andes"`
+
+Output:
+
+`FELIX SAN MARTIN 390, Huiliches, Neuquén`
+
+### Normalizar un conjunto de direcciones
+
+```
+Usage: geoarpy batch-normalize [OPTIONS] INPUT OUTPUT
+
+  geoarpy batch normalize Commandline
+
+  Normaliza un archivo csv con direcciones.  Se suminstra un archivo (INPUT) y
+  se leen las direcciones bajo el encabezado "direccion".  Optativamente, se
+  pueden suministrar columnas con información extra bajo los siguientes
+  encabezados:     "localidad_censal", "localidad", "departamento",
+  "provincia" Escribe los resultados a un archivo csv (OUTPUT)
+
+  url es el path a la API destino que se quiere consultar.
+
+Options:
+  --url TEXT     [default: https://apis.datos.gob.ar/georef/api/]
+  --token TEXT
+  --prefix TEXT  [default: norm]
+  --debug
+  --help         Show this message and exit.
+
+```
+
+Lee las direcciones de un archivo csv y escribe los datos normalizados en un nuevo archivo
+
+`geoarpy batch-normalize ./direciones.csv ./direcciones_normalizadas.csv`

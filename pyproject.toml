@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "georef-ar-py"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Pablo E. Andino", email="pabloe.andino@gmail.com" },
 ]
