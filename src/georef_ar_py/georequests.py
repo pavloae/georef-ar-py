@@ -44,6 +44,6 @@ def get_json_post(url, endpoint, data, **kwargs):
     with requests.post("{}{}".format(url, endpoint), json=data, headers=headers) as req:
         if req.status_code == 200:
             return req.json()
-        raise requests.RequestException(req)
+        raise req.raise_for_status()
 
 

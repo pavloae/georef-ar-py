@@ -11,7 +11,7 @@ from .constants import ENTITIES
 from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
-from .normalization import normalize_address, csv_to_csv
+from .normalization import get_normalized_address, csv_to_csv
 
 
 def get_logger(level):
@@ -118,9 +118,10 @@ def normalize(*args, **kwargs):
 
     address = kwargs.pop('address')
 
-    address_normalized = normalize_address(address, target_url, campos='basico', max=1, **kwargs)
+    address_normalized = get_normalized_address(address, target_url, campos='basico', max=1, **kwargs)
 
-    print(address_normalized)
+    if len(address_normalized) > 0:
+        print(address_normalized['nomenclatura'])
 
 
 @cli.command()
