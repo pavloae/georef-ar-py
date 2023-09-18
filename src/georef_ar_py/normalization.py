@@ -3,25 +3,88 @@ import logging
 from requests import HTTPError
 
 from .exceptions import AddressNormalizationException
-from .georequests import API_BASE_URL, get_json, get_json_post
+from .georequests import API_BASE_URL, get_json, get_json_post, get_json_async
 import pandas as pd
 
 from .utils import flatten_dict
 
 log = logging.getLogger(__name__)
 
+class Address:
 
-def get_normalized_address(address, url=API_BASE_URL, **kwargs):
+    def __init__(self, direccion=None, provincia=None, departamento=None, localidad_censal=None, localidad=None) -> None:
+        super().__init__()
+        self.address = direccion
+        self.province = provincia
+        self.department = departamento
+        self.census_locality = localidad_censal
+        self.locality = localidad
+        self.normalization = {}
+
+    def __str__(self) -> str:
+        return "{}. Provincia: {} - Departamento: {} - Localidad: {}".format(self.address, self.province, self.department, self.census_locality)
+
+    def get_params_query(self):
+        params = {}
+        if self.province:
+            params.update({'provincia': self.province})
+        if self.department:
+            params.update({'departamento': self.department})
+        if self.census_locality:
+            params.update({'localidad_censal': self.census_locality})
+        if self.locality:
+            params.update({'localidad': self.locality})
+        return params
+
+    def get_normalized(self):
+        return self.normalization
+
+class AddressNormalizer:
+
+    def __init__(self, url=API_BASE_URL, chunk_size=1000) -> None:
+        super().__init__()
+        self.addresses = []
+        self.url = url
+        self.chunk_size = chunk_size
+
+    def load_csv(self, csv_file):
+        csv_source = pd.read_csv(csv_file).filter(items=[
+            'direccion',
+            'localidad_censal',
+            'localidad',
+            'departamento',
+            'provincia'
+        ]).astype('str', errors='ignore')
+
+        self.addresses = []
+        for params in csv_source.to_dict('records'):
+            self.addresses.append(Address(**params))
+
+        for address in self.addresses:
+            print(address)
+
+    def request_addresses(self):
+        pass
+
+    def export_csv(self, csv_file):
+        normalized_addresses = [address.get_normalized() for address in self.addresses]
+        pd.DataFrame(normalized_addresses).to_csv(csv_file, index=False, header=True)
+
+
+async def get_normalized_address(session, address: Address, url=API_BASE_URL, **kwargs):
+    for key, value in address.get_params_query().items():
+        kwargs[key] = value
+
     try:
-        response = get_json(url, 'direcciones', direccion=address, **kwargs)
+        response = await get_json_async(session, url, 'direcciones', direccion=address.address, **kwargs)
         normalized_addresses = response.get('direcciones', [])
-        return {} if len(address) == 0 else normalized_addresses[0]
+        return {} if len(normalized_addresses) == 0 else normalized_addresses[0]
     except HTTPError as re:
         log.error("La consulta falló! status_code: {} - reason: {}".format(re.response.status_code, re.response.reason))
         raise AddressNormalizationException(address, re.response)
 
 
-async def get_normalize_addresses_batch(addresses, url=API_BASE_URL, **kwargs):
+async def get_normalize_addresses_batch(session, addresses, url=API_BASE_URL, **kwargs):
     data = {'direcciones': addresses}
     try:
         response = get_json_post(url, 'direcciones', data, **kwargs)
@@ -32,7 +95,7 @@ async def get_normalize_addresses_batch(addresses, url=API_BASE_URL, **kwargs):
         normalized_addresses = []
         for address in addresses:
             try:
-                normalized_addresses.append(get_normalized_address(address, url, **kwargs))
+                normalized_addresses.append(get_normalized_address(session, address, url, **kwargs))
             except AddressNormalizationException as ane:
                 normalized_addresses.append({})
 
