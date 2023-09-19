@@ -46,6 +46,7 @@ def get_json_post(url, endpoint, data, **kwargs):
             return req.json()
         raise req.raise_for_status()
 
+
 async def get_json_post_async(session, url, endpoint, data, **kwargs):
     headers = kwargs.pop('headers', {})
     headers.update({"Content-Type": "application/json"})
@@ -53,7 +54,7 @@ async def get_json_post_async(session, url, endpoint, data, **kwargs):
         headers.update({'Authorization': 'Bearer {}'.format(TOKEN)})
 
     async with session.post("{}{}".format(url, endpoint), json=data, headers=headers) as req:
-        if req.status_code == 200:
+        if req.status == 200:
             return await req.json()
         raise req.raise_for_status()
 

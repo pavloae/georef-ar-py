@@ -1,14 +1,19 @@
+import asyncio
 import logging
+from typing import List, Union
 
+import aiohttp
+import numpy as np
+from aiohttp import ClientResponseError, ServerDisconnectedError
 from requests import HTTPError
 
-from .exceptions import AddressNormalizationException
-from .georequests import API_BASE_URL, get_json, get_json_post, get_json_async
+from .georequests import API_BASE_URL, get_json_async, get_json_post_async
 import pandas as pd
 
 from .utils import flatten_dict
 
 log = logging.getLogger(__name__)
+
 
 class Address:
 
@@ -19,13 +24,20 @@ class Address:
         self.department = departamento
         self.census_locality = localidad_censal
         self.locality = localidad
-        self.normalization = {}
+        self._normalization = {}
 
     def __str__(self) -> str:
-        return "{}. Provincia: {} - Departamento: {} - Localidad: {}".format(self.address, self.province, self.department, self.census_locality)
+        return "Direccion: {} - Provincia: {} - Departamento: {} - Localidad censal: {} - Localidad: {} [{}] ".format(
+            self.address, self.province, self.department, self.census_locality, self.locality, self.nomencla
+        )
+
+    def validate(self):
+        pass
+        # if not self.address or self.address == '':
+        #     raise ValueError("El campo direccion debe estar presente y no puede estar vacío")
 
     def get_params_query(self):
-        params = {}
+        params = {'direccion': self.address}
         if self.province:
             params.update({'provincia': self.province})
         if self.department:
@@ -36,113 +48,154 @@ class Address:
             params.update({'localidad': self.locality})
         return params
 
-    def get_normalized(self):
-        return self.normalization
+    def get_normalization(self):
+        return self._normalization
+
+    @property
+    def nomencla(self):
+        return self._normalization.get("nomenclatura", None)
+
 
 class AddressNormalizer:
 
     def __init__(self, url=API_BASE_URL, chunk_size=1000) -> None:
         super().__init__()
-        self.addresses = []
-        self.url = url
-        self.chunk_size = chunk_size
+        self._addresses = []
+        self._normalized = False
+        self._url = url
+        self._chunk_size = chunk_size
+        self._processed = 0
 
     def load_csv(self, csv_file):
-        csv_source = pd.read_csv(csv_file).filter(items=[
+        csv_source = pd.read_csv(csv_file, keep_default_na=False).filter(items=[
             'direccion',
             'localidad_censal',
             'localidad',
             'departamento',
             'provincia'
         ]).astype('str', errors='ignore')
+        csv_source.replace(np.nan, None, inplace=True)
 
-        self.addresses = []
+        self.reset()
         for params in csv_source.to_dict('records'):
-            self.addresses.append(Address(**params))
+            self._addresses.append(Address(**params))
 
-        for address in self.addresses:
-            print(address)
+    def validate(self):
+        try:
+            for pos, address in enumerate(self._addresses):
+                address.validate()
+        except ValueError as ve:
+            raise ValueError("Error en el registro {}. {}".format(pos + 1, ve.__str__()))
 
-    def request_addresses(self):
-        pass
+    def reset(self):
+        self._addresses = []
+        self._normalized = False
 
-    def export_csv(self, csv_file):
-        normalized_addresses = [address.get_normalized() for address in self.addresses]
-        pd.DataFrame(normalized_addresses).to_csv(csv_file, index=False, header=True)
+    async def run_normalization_chunk(self, session, chunk: List[Address]):
+        addresses = [address.get_params_query() for address in chunk]
+        try:
+            normalized_addresses = await normalize_addresses(session, addresses, self._url)
+            for address, normalization in zip(chunk, normalized_addresses):
+                address._normalization = normalization
+            self._processed += len(chunk)
+            print("Procesados... {} de {}".format(self._processed, len(self._addresses)))
+            return normalized_addresses
+        except Exception as re:
+            response = await asyncio.gather(
+                *[normalize_address(session, address.address, self._url, **address.get_params_query()) for address in chunk]
+            )
+            for address, normalization in zip(chunk, response):
+                address._normalization = normalization
+            self._processed += len(chunk)
+            print("Procesados... {} de {}".format(self._processed, len(self._addresses)))
+            return response
+        except Exception as e:
+            raise e
+
+    async def run_normalization(self):
+        chunks = [self._addresses[i:i + self._chunk_size] for i in range(0, len(self._addresses), self._chunk_size)]
+        async with aiohttp.ClientSession() as session:
+            await asyncio.gather(*[self.run_normalization_chunk(session, chunk) for chunk in chunks])
+
+    @property
+    def normalized_addresses(self):
+        if not self._normalized:
+            asyncio.run(self.run_normalization())
+        return [address.get_normalization() for address in self._addresses]
+
+    def export_csv(self, csv_file, prefix=''):
+        rows = [flatten_dict(address, prefix=prefix) for address in self.normalized_addresses]
+        pd.DataFrame(rows).to_csv(csv_file, index=False, header=True)
 
 
-async def get_normalized_address(session, address: Address, url=API_BASE_URL, **kwargs):
-    for key, value in address.get_params_query().items():
-        kwargs[key] = value
+async def normalize_address(session, address, url=API_BASE_URL, **kwargs) -> dict:
+    """ Consulta a la API para normalizar una dirección
 
+    :param session: Client session for request
+    :param address: Una dirección a normalizar en forma de texto.
+    :param url: La url de la API a ser consultada
+    :param kwargs: Los parámetros de la consulta (optativos) [
+    'provincia', 'departamento', 'localidad_censal', 'localidad'
+    ], y otros parámetros extra.
+    :return: Un diccionario con los datos de la normalización en caso de éxito, un diccionario vacío si no se encontró
+    un resultado, o un diccionario con los errores en caso de producirse:
+
+    """
+    if address:
+        kwargs.update({'direccion': address})
     try:
-        response = await get_json_async(session, url, 'direcciones', direccion=address.address, **kwargs)
+        response = await get_json_async(session, url, 'direcciones', **kwargs)
         normalized_addresses = response.get('direcciones', [])
         return {} if len(normalized_addresses) == 0 else normalized_addresses[0]
     except HTTPError as re:
-        log.error("La consulta falló! status_code: {} - reason: {}".format(re.response.status_code, re.response.reason))
-        raise AddressNormalizationException(address, re.response)
+        return {
+            'error': {
+                'status_code': re.response.status_code,
+                'reason': re.response.reason
+            }
+        }
+    except ClientResponseError as cre:
+        return {
+            'error': {
+                'status_code': cre.status,
+                'reason': cre.message
+            }
+        }
+    except ServerDisconnectedError as sde:
+        return {
+            'error': {
+                'status_code': 'Unknown',
+                'reason': sde.message
+            }
+        }
+    except asyncio.TimeoutError as toe:
+        return {
+            'error': {
+                'status_code': 'Unknown',
+                'reason': "Timeout error"
+            }
+        }
+    except Exception as e:
+        return {
+            'error': {
+                'status_code': 'Unknown',
+                'reason': "Unknown"
+            }
+        }
 
 
-async def get_normalize_addresses_batch(session, addresses, url=API_BASE_URL, **kwargs):
-    data = {'direcciones': addresses}
-    try:
-        response = get_json_post(url, 'direcciones', data, **kwargs)
-        resultados = response.get('resultados', [])
-        direcciones = list(a.get('direcciones') for a in resultados)
-        return direcciones
-    except AddressNormalizationException as ane:
-        normalized_addresses = []
-        for address in addresses:
-            try:
-                normalized_addresses.append(get_normalized_address(session, address, url, **kwargs))
-            except AddressNormalizationException as ane:
-                normalized_addresses.append({})
+async def normalize_addresses(session, addresses: List[dict], url=API_BASE_URL, **kwargs) -> List[dict]:
+    """ Consulta a la API para normalizar un conjunto de direcciones
 
-
-def csv_to_csv(input_csv, output_csv, url=API_BASE_URL, chunk=1000, **kwargs):
-    df_source = pd.read_csv(input_csv).filter(items=[
-        'direccion',
-        'localidad_censal',
-        'localidad',
-        'departamento',
-        'provincia'
-    ]).astype('str', errors='ignore')
-    df_query = df_source.copy()
-
-    params = [
-        'orden',
-        'aplanar',
-        'campos',
-        'max',
-        'inicio',
-        'exacto'
-    ]
-
-    for param in filter(lambda param: param in kwargs.keys(), params):
-        df_query[param] = kwargs.get(param)
-
-    df_query_list = [df_query[i:i + chunk] for i in range(0, df_query.shape[0], chunk)]
-
-    def get_response_list(df_query_chuck):
-        rows = []
-        response = get_normalize_addresses_batch(df_query_chuck.to_dict('records'), url=url, **kwargs)
-        for address in response['resultados']:
-            row = {} if len(address['direcciones']) == 0 else address['direcciones'][0]
-            rows.append(flatten_dict(row, prefix=kwargs.get('prefix', '')))
-        return rows
-
-    list_response = []
-    for pos, df_query_chuck in enumerate(df_query_list):
-        log.info(
-            "Consulta {}: Registros {} a {} de {}".format(pos + 1, pos * chunk + 1, (pos + 1) * chunk, len(df_query))
-        )
-        list_response.extend(get_response_list(df_query_chuck))
-
-    # Construye un dataframe con la lista de direcciones
-    sum_response_df = pd.DataFrame(list_response)
-
-    # Concatena los dataframe de consulta y respuesta
-    result = pd.concat([df_source, sum_response_df], axis=1)
-
-    result.to_csv(output_csv, index=False, header=True)
+    :param session: Client session for request
+    :param addresses: Una lista de diccionarios con los parámetros de consulta para cada dirección.
+    :param url: La url de la API a ser consultada
+    :param kwargs: Parámetros extra. Los específicos de cada consultan van incorporados en cada diccionario.
+    :return:
+    """
+    data = {"direcciones": addresses}
+    response = await get_json_post_async(session, url, "direcciones", data, **kwargs)
+    direcciones = []
+    for result in response.get('resultados'):
+        direcciones.append({} if len(result.get('direcciones', [])) == 0 else result.get('direcciones')[0])
+    return direcciones

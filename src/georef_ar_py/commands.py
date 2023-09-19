@@ -11,7 +11,7 @@ from .constants import ENTITIES
 from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
-from .normalization import get_normalized_address, csv_to_csv
+from .normalization import normalize_address, AddressNormalizer
 
 
 def get_logger(level):
@@ -118,7 +118,7 @@ def normalize(*args, **kwargs):
 
     address = kwargs.pop('address')
 
-    address_normalized = get_normalized_address(address, target_url, campos='basico', max=1, **kwargs)
+    address_normalized = normalize_address(address, target_url, campos='basico', max=1, **kwargs)
 
     if len(address_normalized) > 0:
         print(address_normalized['nomenclatura'])
@@ -129,9 +129,10 @@ def normalize(*args, **kwargs):
 @click.argument('output', type=click.File('wb'))
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
 @click.option('--token', required=False, type=str, show_default=True, default=None)
-@click.option('--prefix', required=False, type=str, show_default=True, default='norm')
+@click.option('--chunk', required=False, type=int, show_default=True, default=1000)
+@click.option('--prefix', required=False, type=str, show_default=True, default='')
 @click.option('--debug', is_flag=True, show_default=False)
-def batch_normalize(input, output, **kwargs):
+def batch_normalize(input_file, output_file, **kwargs):
     """
     geoarpy batch normalize Commandline
 
@@ -149,6 +150,10 @@ def batch_normalize(input, output, **kwargs):
     target_url = kwargs.pop('url')
     georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
+    chuck_size = kwargs.pop('chunk')
     prefix = kwargs.pop('prefix')
 
-    csv_to_csv(input, output, target_url, max=1, prefix=prefix)
+    normalizer = AddressNormalizer(url=target_url, chunk_size=chuck_size)
+    normalizer.load_csv(input_file)
+    normalizer.validate()
+    normalizer.export_csv(output_file, prefix=prefix)
