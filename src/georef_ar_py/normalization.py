@@ -65,6 +65,21 @@ class AddressNormalizer:
         self._url = url
         self._chunk_size = chunk_size
         self._processed = 0
+        self._request_count = 0
+
+    async def request(self, session, url, endpoint, data=None, **kwargs):
+        while self._request_count > 200:
+            await asyncio.sleep(1)
+        log.info("Procesando... {}".format(self._request_count))
+        self._request_count += 1
+        try:
+            if data:
+                response = await get_json_post_async(session, url, endpoint, data, **kwargs)
+            else:
+                response = await get_json_async(session, url, endpoint, **kwargs)
+            return response
+        finally:
+            self._request_count -= 1
 
     def load_csv(self, csv_file):
         csv_source = pd.read_csv(csv_file, keep_default_na=False).filter(items=[
@@ -94,20 +109,20 @@ class AddressNormalizer:
     async def run_normalization_chunk(self, session, chunk: List[Address]):
         addresses = [address.get_params_query() for address in chunk]
         try:
-            normalized_addresses = await normalize_addresses(session, addresses, self._url)
+            normalized_addresses = await self.normalize_addresses(session, addresses, self._url)
             for address, normalization in zip(chunk, normalized_addresses):
                 address._normalization = normalization
             self._processed += len(chunk)
-            print("Procesados... {} de {}".format(self._processed, len(self._addresses)))
+            log.info("Procesados... {} de {}".format(self._processed, len(self._addresses)))
             return normalized_addresses
         except Exception as re:
             response = await asyncio.gather(
-                *[normalize_address(session, address.address, self._url, **address.get_params_query()) for address in chunk]
+                *[self.normalize_address(session, address.address, self._url, **address.get_params_query()) for address in chunk]
             )
             for address, normalization in zip(chunk, response):
                 address._normalization = normalization
             self._processed += len(chunk)
-            print("Procesados... {} de {}".format(self._processed, len(self._addresses)))
+            log.info("Procesados... {} de {}".format(self._processed, len(self._addresses)))
             return response
         except Exception as e:
             raise e
@@ -127,75 +142,73 @@ class AddressNormalizer:
         rows = [flatten_dict(address, prefix=prefix) for address in self.normalized_addresses]
         pd.DataFrame(rows).to_csv(csv_file, index=False, header=True)
 
+    async def normalize_address(self, session, address, url=API_BASE_URL, **kwargs) -> dict:
+        """ Consulta a la API para normalizar una dirección
 
-async def normalize_address(session, address, url=API_BASE_URL, **kwargs) -> dict:
-    """ Consulta a la API para normalizar una dirección
+        :param session: Client session for request
+        :param address: Una dirección a normalizar en forma de texto.
+        :param url: La url de la API a ser consultada
+        :param kwargs: Los parámetros de la consulta (optativos) [
+        'provincia', 'departamento', 'localidad_censal', 'localidad'
+        ], y otros parámetros extra.
+        :return: Un diccionario con los datos de la normalización en caso de éxito, un diccionario vacío si no se encontró
+        un resultado, o un diccionario con los errores en caso de producirse:
 
-    :param session: Client session for request
-    :param address: Una dirección a normalizar en forma de texto.
-    :param url: La url de la API a ser consultada
-    :param kwargs: Los parámetros de la consulta (optativos) [
-    'provincia', 'departamento', 'localidad_censal', 'localidad'
-    ], y otros parámetros extra.
-    :return: Un diccionario con los datos de la normalización en caso de éxito, un diccionario vacío si no se encontró
-    un resultado, o un diccionario con los errores en caso de producirse:
-
-    """
-    if address:
-        kwargs.update({'direccion': address})
-    try:
-        response = await get_json_async(session, url, 'direcciones', **kwargs)
-        normalized_addresses = response.get('direcciones', [])
-        return {} if len(normalized_addresses) == 0 else normalized_addresses[0]
-    except HTTPError as re:
-        return {
-            'error': {
-                'status_code': re.response.status_code,
-                'reason': re.response.reason
+        """
+        if address:
+            kwargs.update({'direccion': address})
+        try:
+            response = await self.request(session, url, 'direcciones', **kwargs)
+            normalized_addresses = response.get('direcciones', [])
+            return {} if len(normalized_addresses) == 0 else normalized_addresses[0]
+        except HTTPError as re:
+            return {
+                'error': {
+                    'status_code': re.response.status_code,
+                    'reason': re.response.reason
+                }
             }
-        }
-    except ClientResponseError as cre:
-        return {
-            'error': {
-                'status_code': cre.status,
-                'reason': cre.message
+        except ClientResponseError as cre:
+            return {
+                'error': {
+                    'status_code': cre.status,
+                    'reason': cre.message
+                }
             }
-        }
-    except ServerDisconnectedError as sde:
-        return {
-            'error': {
-                'status_code': 'Unknown',
-                'reason': sde.message
+        except ServerDisconnectedError as sde:
+            return {
+                'error': {
+                    'status_code': 'Unknown',
+                    'reason': sde.message
+                }
             }
-        }
-    except asyncio.TimeoutError as toe:
-        return {
-            'error': {
-                'status_code': 'Unknown',
-                'reason': "Timeout error"
+        except asyncio.TimeoutError as toe:
+            return {
+                'error': {
+                    'status_code': 'Unknown',
+                    'reason': "Timeout error"
+                }
             }
-        }
-    except Exception as e:
-        return {
-            'error': {
-                'status_code': 'Unknown',
-                'reason': "Unknown"
+        except Exception as e:
+            return {
+                'error': {
+                    'status_code': 'Unknown',
+                    'reason': "Unknown"
+                }
             }
-        }
 
+    async def normalize_addresses(self, session, addresses: List[dict], url=API_BASE_URL, **kwargs) -> List[dict]:
+        """ Consulta a la API para normalizar un conjunto de direcciones
 
-async def normalize_addresses(session, addresses: List[dict], url=API_BASE_URL, **kwargs) -> List[dict]:
-    """ Consulta a la API para normalizar un conjunto de direcciones
-
-    :param session: Client session for request
-    :param addresses: Una lista de diccionarios con los parámetros de consulta para cada dirección.
-    :param url: La url de la API a ser consultada
-    :param kwargs: Parámetros extra. Los específicos de cada consultan van incorporados en cada diccionario.
-    :return:
-    """
-    data = {"direcciones": addresses}
-    response = await get_json_post_async(session, url, "direcciones", data, **kwargs)
-    direcciones = []
-    for result in response.get('resultados'):
-        direcciones.append({} if len(result.get('direcciones', [])) == 0 else result.get('direcciones')[0])
-    return direcciones
+        :param session: Client session for request
+        :param addresses: Una lista de diccionarios con los parámetros de consulta para cada dirección.
+        :param url: La url de la API a ser consultada
+        :param kwargs: Parámetros extra. Los específicos de cada consultan van incorporados en cada diccionario.
+        :return:
+        """
+        data = {"direcciones": addresses}
+        response = await self.request(session, url, "direcciones", data=data, **kwargs)
+        direcciones = []
+        for result in response.get('resultados'):
+            direcciones.append({} if len(result.get('direcciones', [])) == 0 else result.get('direcciones')[0])
+        return direcciones
