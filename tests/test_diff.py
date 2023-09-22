@@ -40,8 +40,8 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.path_dir = os.getcwd()
-        self.src_url = "http://52.23.185.155/georef/api/"
-        self.target_url = "http://52.23.185.155/georef/api/"
+        self.src_url = "http://apis.datos.gob.ar/georef/api/"
+        self.target_url = "http://apis.datos.gob.ar/georef-demo/api/"
 
     @mock.patch('src.georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")

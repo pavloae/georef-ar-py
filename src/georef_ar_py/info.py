@@ -92,7 +92,7 @@ async def get_resume(url):
     resume = {}
 
     resume.setdefault('provincias', {}).update({'total': len(entities['provincias'])})
-    resume['provincias'].update({row['id']: {} for row in entities['provincias']})
+    resume['provincias']._update_pbar({row['id']: {} for row in entities['provincias']})
 
     resume.setdefault('departamentos', {}).update({'total': len(entities['departamentos'])})
     for row in entities['departamentos']:

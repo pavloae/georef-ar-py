@@ -4,6 +4,22 @@ API_BASE_URL = "https://apis.datos.gob.ar/georef/api/"
 TOKEN = None
 
 
+def get_limits(url, endpoint, **kwargs):
+    headers = {'Authorization': 'Bearer {}'.format(TOKEN)} if TOKEN and url == API_BASE_URL else None
+    with requests.get("{}{}".format(url, endpoint), params=kwargs, headers=headers) as req:
+        store = req.headers._store
+        empty = (None, None)
+        return {
+            'limit-day': store.get('x-ratelimit-limit-day', empty)[1],
+            'remaining-day': store.get('x-ratelimit-remaining-day', empty)[1],
+            'limit-hour': store.get('x-ratelimit-limit-hour', empty)[1],
+            'remaining-hour': store.get('x-ratelimit-remaining-hour', empty)[1],
+            'limit-minute': store.get('x-ratelimit-limit-minute', empty)[1],
+            'remaining-minute': store.get('x-ratelimit-remaining-minute', empty)[1],
+            'limit-decond': store.get('x-ratelimit-limit-second', empty)[1],
+            'remaining-second': store.get('x-ratelimit-remaining-second', empty)[1],
+        }
+
 def get_json(url, endpoint, **kwargs):
     """
         Obtiene una respuesta como json para la entidad consultada.

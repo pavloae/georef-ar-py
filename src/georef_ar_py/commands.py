@@ -127,25 +127,27 @@ def normalize(*args, **kwargs):
 
 
 @cli.command()
-@click.argument('input_file', type=click.File('rb'))
-@click.argument('output_file', type=click.File('wb'))
+@click.argument('input_csv', type=click.Path('rb'))
+@click.argument('output_csv', type=click.Path('wb'))
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
 @click.option('--token', required=False, type=str, show_default=True, default=None)
-@click.option('--chunk', required=False, type=int, show_default=True, default=1000)
-@click.option('--prefix', required=False, type=str, show_default=True, default='')
+@click.option('--chunk_size', required=False, type=int, show_default=True, default=1000)
+@click.option('--data_size', required=False, type=int, show_default=True, default=500)
+@click.option('--rps', required=False, type=int, show_default=True, default=40)
 @click.option('--debug', is_flag=True, show_default=False)
-def batch_normalize(input_file, output_file, **kwargs):
+def batch_normalize(input_csv, output_csv, **kwargs):
     """
     geoarpy batch normalize Commandline
 
     Normaliza un archivo csv con direcciones.
-     Se suminstra un archivo (INPUT) y se leen las direcciones bajo el encabezado "direccion".
+     Se suministra un archivo (input_csv) y se leen las direcciones bajo el encabezado "direccion".
      Optativamente, se pueden suministrar columnas con información extra bajo los siguientes encabezados:
         "localidad_censal", "localidad", "departamento", "provincia"
-    Escribe los resultados a un archivo csv (OUTPUT)
+    Escribe los resultados a un archivo csv (output_csv)
 
     url es el path a la API destino que se quiere consultar.
     """
+
     debug = kwargs.pop('debug')
     log = get_logger(logging.DEBUG if debug else logging.INFO)
     log.info("Comenzando la normalización...")
@@ -153,10 +155,11 @@ def batch_normalize(input_file, output_file, **kwargs):
     target_url = kwargs.pop('url')
     georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
-    chuck_size = kwargs.pop('chunk')
-    prefix = kwargs.pop('prefix')
+    normalizer = AddressNormalizer(
+        url=target_url,
+        chunk_size=kwargs.pop('chunk_size'),
+        data_size=kwargs.pop('data_size'),
+        rps=kwargs.pop('rps')
+    )
 
-    normalizer = AddressNormalizer(url=target_url, chunk_size=chuck_size)
-    normalizer.load_csv(input_file)
-    normalizer.validate()
-    normalizer.export_csv(output_file, prefix=prefix)
+    normalizer.csv2csv(input_csv, output_csv)
