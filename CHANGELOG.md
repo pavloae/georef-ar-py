@@ -9,6 +9,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ### Added
 
+## [0.0.6] - 2023-09-23
+
+### Added
+
+- Implementa consultas asincronas en la normalización de direcciones por lotes para disminuir el tiempo
+- Lectura de csv por chunks para controla la memoria 
+- Agrega un ratelimiter rudimentario para la normalización de direcciones
+
 ## [0.0.5] - 2023-09-15
 
 ### Added
@@ -50,6 +58,9 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Tres funciones de consulta a la API tomadas de la documentación.
 
 [unreleased]: https://github.com/pavloae/georef-ar-py
+[0.0.6]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.6
+[0.0.5]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.5
+[0.0.4]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.4
 [0.0.3]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.3
 [0.0.2]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.2
 [0.0.1]: https://github.com/pavloae/georef-ar-py/releases/tag/0.0.1

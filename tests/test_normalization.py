@@ -55,8 +55,8 @@ class Test(unittest.IsolatedAsyncioTestCase):
 
         get_logger(logging.DEBUG)
 
-        input_file = os.path.join(os.getcwd(), "csv/carrefour.csv")
-        output_file = os.path.join(os.getcwd(), "csv/carrefour_normalized.csv")
+        input_file = os.path.join(os.getcwd(), "tests/csv/carrefour.csv")
+        output_file = os.path.join(os.getcwd(), "tests/csv/carrefour_normalized.csv")
 
         address_normalizer = AddressNormalizer()
         address_normalizer.csv2csv(input_file, output_file)

@@ -11,7 +11,7 @@ from .constants import ENTITIES
 from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
-from .normalization import AddressNormalizer
+from .normalization import AddressNormalizer, Address
 
 
 def get_logger(level):
@@ -28,9 +28,18 @@ def cli():
 @cli.command()
 @click.argument('url', type=str)
 @click.option('--origin_url', required=False, type=str, show_default=True, default=API_BASE_URL)
-@click.option('--token', required=False, type=str, show_default=True, default=None)
-@click.option('--layer', required=False, type=click.Choice(ENTITIES, case_sensitive=True), show_default=True, default=None)
-@click.option('--extension', required=False, type=click.Choice(['json', 'csv', 'both'], case_sensitive=True), show_default=True, default="both")
+@click.option(
+    '--token', required=False, type=str, show_default=True, default=None,
+    help="Un token para enviar en el encabezado de cada petición"
+)
+@click.option(
+    '--layer', required=False, type=click.Choice(ENTITIES, case_sensitive=True),
+    show_default=True, default=None
+)
+@click.option(
+    '--extension', required=False, type=click.Choice(['json', 'csv', 'both'], case_sensitive=True),
+    show_default=True, default="both"
+)
 @click.option('--debug', is_flag=True, show_default=False)
 def diff(*args, **kwargs):
     """
@@ -68,7 +77,10 @@ def diff(*args, **kwargs):
 
 @cli.command()
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
-@click.option('--token', required=False, type=str, show_default=True, default=None)
+@click.option(
+    '--token', required=False, type=str, show_default=True, default=None,
+    help="Un token para enviar en el encabezado de cada petición"
+)
 @click.option('--debug', is_flag=True, show_default=False)
 def info(*args, **kwargs):
     """
@@ -94,9 +106,12 @@ def info(*args, **kwargs):
 
 
 @cli.command()
-@click.argument('address', type=str)
+@click.argument('direccion', type=str)
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
-@click.option('--token', required=False, type=str, show_default=True, default=None)
+@click.option(
+    '--token', required=False, type=str, show_default=True, default=None,
+    help="Un token para enviar en el encabezado de cada petición"
+)
 @click.option('--provincia', required=False, type=str, show_default=True, default=None)
 @click.option('--departamento', required=False, type=str, show_default=True, default=None)
 @click.option('--localidad_censal', required=False, type=str, show_default=True, default=None)
@@ -116,24 +131,35 @@ def normalize(*args, **kwargs):
     target_url = kwargs.pop('url')
     georequests.__dict__['TOKEN'] = kwargs.pop('token')
 
-    address = kwargs.pop('address')
+    address = Address(**kwargs)
 
-    address_normalized = asyncio.run(
-        AddressNormalizer.normalize_address(address, target_url, campos='basico', max=1, **kwargs)
-    )
+    address_normalizer = AddressNormalizer(target_url)
 
-    if len(address_normalized) > 0:
-        print(address_normalized['nomenclatura'])
+    address_normalizer.normalize(address)
+
+    print(address.nomenclature)
 
 
 @cli.command()
-@click.argument('input_csv', type=click.Path('rb'))
-@click.argument('output_csv', type=click.Path('wb'))
+@click.argument('input_csv', type=click.Path(exists=True))
+@click.argument('output_csv', type=click.Path(writable=True))
 @click.option('--url', required=False, type=str, show_default=True, default=API_BASE_URL)
-@click.option('--token', required=False, type=str, show_default=True, default=None)
-@click.option('--chunk_size', required=False, type=int, show_default=True, default=1000)
-@click.option('--data_size', required=False, type=int, show_default=True, default=500)
-@click.option('--rps', required=False, type=int, show_default=True, default=40)
+@click.option(
+    '--token', required=False, type=str, show_default=True, default=None,
+    help="Un token para enviar en el encabezado de cada petición"
+)
+@click.option(
+    '--chunk_size', required=False, type=int, show_default=True, default=1000,
+    help="Cantidad de registros a leer desde un csv en cada procesamiento"
+)
+@click.option(
+    '--data_size', required=False, type=int, show_default=True, default=500,
+    help="Cantidad de registros a enviar en cada petición POST"
+)
+@click.option(
+    '--rps', required=False, type=int, show_default=True, default=None,
+    help="Número máximo de peticiones por segundo"
+)
 @click.option('--debug', is_flag=True, show_default=False)
 def batch_normalize(input_csv, output_csv, **kwargs):
     """

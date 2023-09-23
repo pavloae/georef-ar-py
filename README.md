@@ -7,7 +7,7 @@ Paquete para consultas y procesamiento de respuestas sobre la API de georef-ar
 
 `pip install georef-ar-py`
 
-Para usar la line a de comandos:
+Para usar desde la línea de comandos:
 
 `pip install "georef-ar-py[cli]"`
 
@@ -26,12 +26,10 @@ Commands:
   diff             geoarpy diff Commandline
   info             geoarpy info Commandline
   normalize        geoarpy normalize Commandline
-
-
 ```
 
 ### Obtener un resumen de una API
-
+`geoarpy info --help`
 ```
 Usage: geoarpy info [OPTIONS]
 
@@ -42,10 +40,10 @@ Usage: geoarpy info [OPTIONS]
   url es el path a la API destino que se quiere consultar.
 
 Options:
-  --url TEXT  [default: https://apis.datos.gob.ar/georef/api/]
+  --url TEXT    [default: https://apis.datos.gob.ar/georef/api/]
+  --token TEXT  Un token para enviar en el encabezado de cada petición
   --debug
-  --help      Show this message and exit.
-
+  --help        Show this message and exit.
 ```
 
 Obtener los datos de una API propia
@@ -57,7 +55,7 @@ Obtener los datos de la API oficial (https://apis.datos.gob.ar/georef/api/)
 `geoarpy info`
 
 ### Obtener las diferencias entre dos API's
-
+`geoarpy diff --help`
 ```
 Usage: geoarpy diff [OPTIONS] URL
 
@@ -71,12 +69,12 @@ Usage: geoarpy diff [OPTIONS] URL
 Options:
   --origin_url TEXT               [default:
                                   https://apis.datos.gob.ar/georef/api/]
+  --token TEXT                    Un token para enviar en el encabezado de
+                                  cada petición
   --layer [provincias|departamentos|municipios|localidades-censales|asentamientos|localidades|calles]
-                                  [default: all]
   --extension [json|csv|both]     [default: both]
   --debug
   --help                          Show this message and exit.
-
 ```
 
 Comparar los datos de una API propia contra la API oficial
@@ -88,7 +86,7 @@ Comparar los datos entre dos API's
 `geoarpy diff "http://mi-api_1.ar/georef/api/" --origin-url "http://mi-api_2.ar/georef/api/"`
 
 ### Normalizar una dirección (Obtener la nomenclatura)
-
+`geoarpy normalize --help`
 ```
 Usage: geoarpy normalize [OPTIONS] ADDRESS
 
@@ -101,7 +99,8 @@ Usage: geoarpy normalize [OPTIONS] ADDRESS
 
 Options:
   --url TEXT               [default: https://apis.datos.gob.ar/georef/api/]
-  --token TEXT
+  --token TEXT             Un token para enviar en el encabezado de cada
+                           petición
   --provincia TEXT
   --departamento TEXT
   --localidad_censal TEXT
@@ -110,36 +109,39 @@ Options:
   --help                   Show this message and exit.
 ```
 
-Comparar los datos de una API propia contra la API oficial
+Normaliza una dirección indicando la localidad
 
-`geoarpy normalize "feliz san martín 390" --localidad_censal="junin de los andes"`
+`geoarpy normalize "feliz san marti 390" --localidad_censal="junin del los andes"`
 
 Output:
 
 `FELIX SAN MARTIN 390, Huiliches, Neuquén`
 
 ### Normalizar un conjunto de direcciones
-
+`geoarpy batch-normalize --help`
 ```
-Usage: geoarpy batch-normalize [OPTIONS] INPUT OUTPUT
+Usage: geoarpy batch-normalize [OPTIONS] INPUT_CSV OUTPUT_CSV
 
   geoarpy batch normalize Commandline
 
-  Normaliza un archivo csv con direcciones.  Se suminstra un archivo (INPUT) y
-  se leen las direcciones bajo el encabezado "direccion".  Optativamente, se
-  pueden suministrar columnas con información extra bajo los siguientes
-  encabezados:     "localidad_censal", "localidad", "departamento",
-  "provincia" Escribe los resultados a un archivo csv (OUTPUT)
+  Normaliza un archivo csv con direcciones.  Se suministra un archivo
+  (input_csv) y se leen las direcciones bajo el encabezado "direccion".
+  Optativamente, se pueden suministrar columnas con información extra bajo los
+  siguientes encabezados:     "localidad_censal", "localidad", "departamento",
+  "provincia" Escribe los resultados a un archivo csv (output_csv)
 
   url es el path a la API destino que se quiere consultar.
 
 Options:
-  --url TEXT     [default: https://apis.datos.gob.ar/georef/api/]
-  --token TEXT
-  --prefix TEXT  [default: norm]
+  --url TEXT            [default: https://apis.datos.gob.ar/georef/api/]
+  --token TEXT          Un token para enviar en el encabezado de cada petición
+  --chunk_size INTEGER  Cantidad de registros a leer desde un csv en cada
+                        procesamiento  [default: 1000]
+  --data_size INTEGER   Cantidad de registros a enviar en cada petición POST
+                        [default: 500]
+  --rps INTEGER         Número máximo de peticiones por segundo
   --debug
-  --help         Show this message and exit.
-
+  --help                Show this message and exit.
 ```
 
 Lee las direcciones de un archivo csv y escribe los datos normalizados en un nuevo archivo

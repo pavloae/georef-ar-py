@@ -8,7 +8,7 @@ import tqdm.asyncio as tqdma
 from aiohttp import ClientResponseError, ServerDisconnectedError
 from requests import HTTPError
 
-from .georequests import API_BASE_URL, get_json_post_async, get_json_async
+from .georequests import API_BASE_URL, get_json_post_async, get_json_async, get_limits
 import pandas as pd
 
 from .utils import flatten_dict
@@ -79,6 +79,7 @@ class Address:
         self.census_locality = localidad_censal
         self.locality = localidad
         self._normalization = None
+        self._nomenclature = None
         self._error = None
 
     def __str__(self) -> str:
@@ -103,7 +104,7 @@ class Address:
 
     @property
     def normalization(self):
-        return self._normalization
+        return self._normalization or {}
 
     @property
     def error(self):
@@ -124,6 +125,12 @@ class Address:
         else:
             return self.error
 
+    @property
+    def nomenclature(self):
+        if self._nomenclature is None:
+            self._nomenclature = self.normalization.get('nomenclatura', '')
+        return self._nomenclature
+
 
 class AddressNormalizer:
 
@@ -142,6 +149,8 @@ class AddressNormalizer:
         self._columns_response = None
         self._rate_limits = None
         self._rps = rps
+        self._total_addresses = 1
+        self._consumption_rate = None
 
     @staticmethod
     def row_count(file):
@@ -163,17 +172,70 @@ class AddressNormalizer:
     @property
     def rate_limits(self):
         if not self._rate_limits:
-            pass
+            try:
+                self._rate_limits = {}
+                for k, v in get_limits(self._url, self._enpoint).items():
+                    self._rate_limits.update({k: int(v) if v else None})
+            except Exception:
+                self._rate_limits = {
+                    'limit-day': 1500000,
+                    'remaining-day': 1500000,
+                    'limit-hour': 154000,
+                    'remaining-hour': 154000,
+                    'limit-minute': 6000,
+                    'remaining-minute': 6000,
+                    'limit-second': 200,
+                    'remaining-second': 200,
+                }
         return self._rate_limits
 
+    @property
+    def rps(self):
+        if not self._rps:
+            post_req = self._total_addresses // self._data_size + 1
+            estimated_error_freq = 0.6
+            get_req = post_req * estimated_error_freq * self._data_size
+            total_req = int(post_req + get_req)
+            rl = self.rate_limits
+            if rl['remaining-second'] > total_req:
+                self._rps = total_req
+            elif rl['remaining-minute'] > total_req:
+                self._rps = total_req // 60
+            elif rl['remaining-hour'] > total_req:
+                self._rps = total_req // (60 * 60)
+            elif rl['remaining-day'] > total_req:
+                self._rps = total_req // (60 * 60 * 24)
+        return self._rps
+
+    @property
+    def consumption_rate(self):
+        if not self._consumption_rate:
+            self._consumption_rate = 1 / self.rps
+        return self._consumption_rate
+
+    def _set_error(self, address, status_code, reason):
+        address.error = {
+            'error': {
+                'status_code': status_code,
+                'reason': reason
+            }
+        }
+        self._errors_count += 1
+
+    def _set_normalization(self, address, normalizations):
+        if len(normalizations) == 0:
+            address.normalization = {}
+        else:
+            address.normalization = normalizations[0]
+            self._normalized_count += 1
+
     def _update_address_count(self):
-        self._normalized_count += 1
         if self._pbar:
             self._pbar.update(1)
 
     async def _request(self, session, data=None, **kwargs):
-        while self._requests_remaining > 40:
-            await asyncio.sleep(1)
+        while self._requests_remaining > 1:
+            await asyncio.sleep(self.consumption_rate)
         self._requests_remaining += 1
         try:
             if data:
@@ -194,43 +256,17 @@ class AddressNormalizer:
 
         try:
             response = await self._request(session, **address.get_params_query())
-            normalized_addresses = response.get('direcciones', [])
-            address.normalization = {} if len(normalized_addresses) == 0 else normalized_addresses[0]
+            self._set_normalization(address, response.get('direcciones', []))
         except HTTPError as re:
-            address.error = {
-                'error': {
-                    'status_code': re.response.status_code,
-                    'reason': re.response.reason
-                }
-            }
+            self._set_error(address, re.response.status_code, re.response.reason)
         except ClientResponseError as cre:
-            address.error = {
-                'error': {
-                    'status_code': cre.status,
-                    'reason': cre.message
-                }
-            }
+            self._set_error(address, cre.status, cre.message)
         except ServerDisconnectedError as sde:
-            address.error = {
-                'error': {
-                    'status_code': 'Unknown',
-                    'reason': sde.message
-                }
-            }
+            self._set_error(address, "Unknown", sde.message)
         except asyncio.TimeoutError:
-            address.error = {
-                'error': {
-                    'status_code': 'Unknown',
-                    'reason': "Timeout error"
-                }
-            }
+            self._set_error(address, "Unknown", "Timeout error")
         except Exception as e:
-            address.error = {
-                'error': {
-                    'status_code': 'Unknown',
-                    'reason': "Unknown"
-                }
-            }
+            self._set_error(address, "Unknown", "Unknown")
         finally:
             self._update_address_count()
             return address
@@ -249,7 +285,7 @@ class AddressNormalizer:
             data = {"direcciones": [address.get_params_query() for address in addresses]}
             response = await self._request(session, data=data)
             for address, result in zip(addresses, response.get('resultados')):
-                address.normalization = {} if len(result.get('direcciones', [])) == 0 else result.get('direcciones')[0]
+                self._set_normalization(address, result.get('direcciones', []))
                 self._update_address_count()
         except Exception:
             await asyncio.gather(*[self.normalize_address(session, address) for address in addresses])
@@ -291,12 +327,15 @@ class AddressNormalizer:
         asyncio.run(self._run_normalization())
 
     def csv2csv(self, source, target):
-        total_count = AddressNormalizer.row_count(source) - 1
+        self._total_addresses = AddressNormalizer.row_count(source) - 1
+        log.info("Direcciones a procesar: {}".format(self._total_addresses))
+        log.info("Peticiones por segundo: {}".format(self.rps))
+        log.info("Tiempo estimado: {}s".format(self._total_addresses // self.rps))
         self._normalized_count = 0
         self._errors_count = 0
-        with tqdma.tqdm(total=total_count, desc="Direcciones procesadas: ") as bar:
+        with tqdma.tqdm(total=self._total_addresses, desc="Direcciones procesadas: ") as bar:
             self._pbar = bar
-            self._pbar.total = total_count
+            self._pbar.total = self._total_addresses
             with pd.read_csv(
                     source, keep_default_na=False, chunksize=self._chunk_size, iterator=True
             ) as reader:

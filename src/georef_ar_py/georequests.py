@@ -16,9 +16,10 @@ def get_limits(url, endpoint, **kwargs):
             'remaining-hour': store.get('x-ratelimit-remaining-hour', empty)[1],
             'limit-minute': store.get('x-ratelimit-limit-minute', empty)[1],
             'remaining-minute': store.get('x-ratelimit-remaining-minute', empty)[1],
-            'limit-decond': store.get('x-ratelimit-limit-second', empty)[1],
+            'limit-second': store.get('x-ratelimit-limit-second', empty)[1],
             'remaining-second': store.get('x-ratelimit-remaining-second', empty)[1],
         }
+
 
 def get_json(url, endpoint, **kwargs):
     """
