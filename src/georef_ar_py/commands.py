@@ -169,9 +169,8 @@ def batch_normalize(input_csv, output_csv, **kwargs):
      Se suministra un archivo (input_csv) y se leen las direcciones bajo el encabezado "direccion".
      Optativamente, se pueden suministrar columnas con información extra bajo los siguientes encabezados:
         "localidad_censal", "localidad", "departamento", "provincia"
-    Escribe los resultados a un archivo csv (output_csv)
 
-    url es el path a la API destino que se quiere consultar.
+    Escribe los resultados a un archivo csv (output_csv)
     """
 
     debug = kwargs.pop('debug')

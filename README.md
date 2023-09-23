@@ -128,9 +128,9 @@ Usage: geoarpy batch-normalize [OPTIONS] INPUT_CSV OUTPUT_CSV
   (input_csv) y se leen las direcciones bajo el encabezado "direccion".
   Optativamente, se pueden suministrar columnas con información extra bajo los
   siguientes encabezados:     "localidad_censal", "localidad", "departamento",
-  "provincia" Escribe los resultados a un archivo csv (output_csv)
+  "provincia"
 
-  url es el path a la API destino que se quiere consultar.
+  Escribe los resultados a un archivo csv (output_csv)
 
 Options:
   --url TEXT            [default: https://apis.datos.gob.ar/georef/api/]
@@ -142,6 +142,7 @@ Options:
   --rps INTEGER         Número máximo de peticiones por segundo
   --debug
   --help                Show this message and exit.
+
 ```
 
 Lee las direcciones de un archivo csv y escribe los datos normalizados en un nuevo archivo
