@@ -12,6 +12,7 @@ from .diff import process
 from .georequests import API_BASE_URL
 from .info import get_resume
 from .normalization import AddressNormalizer, Address
+from .utils import converter
 
 
 def get_logger(level):
@@ -188,3 +189,25 @@ def batch_normalize(input_csv, output_csv, **kwargs):
     )
 
     normalizer.csv2csv(input_csv, output_csv)
+
+@cli.command()
+@click.argument('input_file', type=click.Path(exists=True))
+@click.argument('output_file', type=click.Path(writable=True))
+@click.option('--debug', is_flag=True, show_default=False)
+def convert(input_file, output_file, **kwargs):
+    """
+    geoarpy convert Commandline
+
+    Normaliza un archivo csv con direcciones.
+     Se suministra un archivo (input_csv) y se leen las direcciones bajo el encabezado "direccion".
+     Optativamente, se pueden suministrar columnas con información extra bajo los siguientes encabezados:
+        "localidad_censal", "localidad", "departamento", "provincia"
+
+    Escribe los resultados a un archivo csv (output_csv)
+    """
+
+    debug = kwargs.pop('debug')
+    get_logger(logging.DEBUG if debug else logging.INFO)
+
+    converter(input_file, output_file)
+
