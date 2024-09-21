@@ -9,9 +9,9 @@ import pandas as pd
 from deepdiff import DeepDiff
 from requests import RequestException
 
-from . import constants
-from .georequests import get_json_async
-from .info import get_entity_number, get_departments_ids
+from georef_ar_py import constants
+from georef_ar_py.georequests import get_json_async
+from georef_ar_py.info import get_entity_number, get_departments_ids
 
 log = logging.getLogger(__name__)
 

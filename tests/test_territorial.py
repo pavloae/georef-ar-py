@@ -3,13 +3,13 @@ import os
 import unittest
 from unittest import mock
 
-from src.georef_ar_py.territorial import get_territorial_units
+from georef_ar_py.territorial import get_territorial_units
 
 
 def get_mocked_territorial():
     filename = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        os.path.join(os.getcwd(), "tests/response_api/territorial.json")
+        os.path.join(os.getcwd(), "response_api/territorial.json")
     )
     with open(filename, 'r') as f:
         return json.loads(f.read())
@@ -17,7 +17,7 @@ def get_mocked_territorial():
 
 class MyTestCase(unittest.TestCase):
 
-    @mock.patch('src.georef_ar_py.territorial.get_json_post')
+    @mock.patch('georef_ar_py.territorial.get_json_post')
     def test_get_territorial_units(self, mock_get_json_post):
         mock_get_json_post.return_value = get_mocked_territorial()
         location1, location2 = get_territorial_units(None, [

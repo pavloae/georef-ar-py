@@ -8,10 +8,10 @@ import tqdm.asyncio as tqdma
 from aiohttp import ClientResponseError, ServerDisconnectedError
 from requests import HTTPError
 
-from .georequests import API_BASE_URL, get_json_post_async, get_json_async, get_limits
+from georef_ar_py.georequests import API_BASE_URL, get_json_post_async, get_json_async, get_limits
 import pandas as pd
 
-from .utils import flatten_dict
+from georef_ar_py.utils import flatten_dict
 
 log = logging.getLogger(__name__)
 

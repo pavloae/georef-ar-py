@@ -1,4 +1,4 @@
-from src.georef_ar_py.georequests import API_BASE_URL, get_json_post
+from georef_ar_py.georequests import API_BASE_URL, get_json_post
 
 
 def get_territorial_units(url, ubicaciones):

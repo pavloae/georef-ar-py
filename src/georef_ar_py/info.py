@@ -2,8 +2,8 @@ import asyncio
 import aiohttp
 import logging
 
-from .georequests import get_json_async, get_json
-from .constants import ENTITIES, PROVINCES_DICT
+from georef_ar_py.georequests import get_json_async, get_json
+from georef_ar_py.constants import ENTITIES, PROVINCES_DICT
 
 log = logging.getLogger(__name__)
 

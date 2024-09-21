@@ -5,9 +5,9 @@ import unittest
 
 import aiohttp
 
-from src.georef_ar_py import utils
-from src.georef_ar_py.__main__ import get_logger
-from src.georef_ar_py.normalization import AddressNormalizer, Address, NORM_TEMPLATE
+from georef_ar_py import utils
+from georef_ar_py.__main__ import get_logger
+from georef_ar_py.normalization import AddressNormalizer, Address, NORM_TEMPLATE
 
 
 class Test(unittest.IsolatedAsyncioTestCase):
@@ -55,8 +55,8 @@ class Test(unittest.IsolatedAsyncioTestCase):
 
         get_logger(logging.DEBUG)
 
-        input_file = os.path.join(os.getcwd(), "tests/csv/carrefour.csv")
-        output_file = os.path.join(os.getcwd(), "tests/csv/carrefour_normalized.csv")
+        input_file = os.path.join(os.getcwd(), "csv/carrefour.csv")
+        output_file = os.path.join(os.getcwd(), "csv/carrefour_normalized.csv")
 
         address_normalizer = AddressNormalizer()
         address_normalizer.csv2csv(input_file, output_file)

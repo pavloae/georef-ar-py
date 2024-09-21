@@ -4,8 +4,8 @@ from unittest import TestCase
 import pytest as pytest
 from requests import RequestException
 
-from src.georef_ar_py import georequests
-from src.georef_ar_py.georequests import get_json, get_limits
+from georef_ar_py import georequests
+from georef_ar_py.georequests import get_json, get_limits
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

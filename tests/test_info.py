@@ -2,8 +2,8 @@ import unittest
 from unittest import TestCase, mock
 
 import tests.test_diff
-from src.georef_ar_py import info
-from src.georef_ar_py.georequests import API_BASE_URL
+from georef_ar_py import info
+from georef_ar_py.georequests import API_BASE_URL
 
 
 async def get_mocked_response_async(session, url, entity, **kwargs):
@@ -16,8 +16,8 @@ def get_mocked_response(url, entity, **kwargs):
 
 class Test(unittest.IsolatedAsyncioTestCase):
 
-    @mock.patch('src.georef_ar_py.info.get_json')
-    @mock.patch('src.georef_ar_py.info.get_json_async')
+    @mock.patch('georef_ar_py.info.get_json')
+    @mock.patch('georef_ar_py.info.get_json_async')
     def test_get_entity_number(self, get_response_async_mock, get_response_mock):
 
         get_response_async_mock.side_effect = get_mocked_response_async
@@ -37,8 +37,8 @@ class Test(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(150054, info.get_entity_number(API_BASE_URL, 'calles'))
 
-    @mock.patch('src.georef_ar_py.info.get_json')
-    @mock.patch('src.georef_ar_py.info.get_json_async')
+    @mock.patch('georef_ar_py.info.get_json')
+    @mock.patch('georef_ar_py.info.get_json_async')
     async def test_get_resume(self, get_response_async_mock, get_response_mock):
 
         get_response_async_mock.side_effect = get_mocked_response_async

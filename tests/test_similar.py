@@ -3,14 +3,14 @@ import os
 import unittest
 from unittest import mock
 
-import src.georef_ar_py
-from src.georef_ar_py.similar import get_similar_bulk
+import georef_ar_py
+from georef_ar_py.similar import get_similar_bulk
 
 
 def get_mocked_similar_san_juan():
     filename = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        os.path.join(os.getcwd(), "tests/response_api/similar_san_juan.json")
+        os.path.join(os.getcwd(), "response_api/similar_san_juan.json")
     )
     with open(filename, 'r') as f:
         return json.loads(f.read())
@@ -19,7 +19,7 @@ def get_mocked_similar_san_juan():
 def get_mocked_similar_bulk():
     filename = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        os.path.join(os.getcwd(), "tests/response_api/similar_bulk.json")
+        os.path.join(os.getcwd(), "response_api/similar_bulk.json")
     )
     with open(filename, 'r') as f:
         return json.loads(f.read())
@@ -27,14 +27,14 @@ def get_mocked_similar_bulk():
 
 class MyTestCase(unittest.TestCase):
 
-    @mock.patch('src.georef_ar_py.similar.get_json')
+    @mock.patch('georef_ar_py.similar.get_json')
     def test_get_similar(self, mock_get_json):
         mock_get_json.return_value = get_mocked_similar_san_juan()
-        response = src.georef_ar_py.similar.get_similar(None, 'provincias', 'San Juan')
+        response = georef_ar_py.similar.get_similar(None, 'provincias', 'San Juan')
         self.assertEqual(response[0]['id'], '70')
         self.assertEqual(response[0]['nombre'], 'San Juan')
 
-    @mock.patch('src.georef_ar_py.similar.get_json_post')
+    @mock.patch('georef_ar_py.similar.get_json_post')
     def test_similar_bulk(self, mock_get_json):
         mock_get_json.return_value = get_mocked_similar_bulk()
         response = get_similar_bulk(None, "provincias", ["pxa", "sant fe"])

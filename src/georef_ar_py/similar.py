@@ -1,5 +1,5 @@
 import urllib
-from src.georef_ar_py.georequests import API_BASE_URL, get_json, get_json_post
+from georef_ar_py.georequests import API_BASE_URL, get_json, get_json_post
 
 
 def get_similar(url, endpoint, nombre, **kwargs):

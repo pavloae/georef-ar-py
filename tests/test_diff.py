@@ -3,19 +3,19 @@ import os
 import unittest
 from unittest import mock
 
-from src.georef_ar_py.diff import get_diff_object, DiffEntity
+from georef_ar_py.diff import get_diff_object, DiffEntity
 
 
 def get_mocked_response(url, entity, **kwargs):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     entity_files = {
-        'provincias': os.path.join(os.getcwd(), "tests/response_api/provincias.json"),
-        'departamentos': os.path.join(os.getcwd(), "tests/response_api/departamentos.json"),
-        'municipios': os.path.join(os.getcwd(), "tests/response_api/municipios.json"),
-        'localidades-censales': os.path.join(os.getcwd(), "tests/response_api/localidades-censales.json"),
-        'asentamientos': os.path.join(os.getcwd(), "tests/response_api/asentamientos.json"),
-        'localidades': os.path.join(os.getcwd(), "tests/response_api/localidades.json"),
-        'calles': os.path.join(os.getcwd(), "tests/response_api/calles.json"),
+        'provincias': os.path.join(os.getcwd(), "response_api/provincias.json"),
+        'departamentos': os.path.join(os.getcwd(), "response_api/departamentos.json"),
+        'municipios': os.path.join(os.getcwd(), "response_api/municipios.json"),
+        'localidades-censales': os.path.join(os.getcwd(), "response_api/localidades-censales.json"),
+        'asentamientos': os.path.join(os.getcwd(), "response_api/asentamientos.json"),
+        'localidades': os.path.join(os.getcwd(), "response_api/localidades.json"),
+        'calles': os.path.join(os.getcwd(), "response_api/calles.json"),
     }
     filename = os.path.join(current_dir, entity_files[entity])
     with open(filename, 'r') as f:
@@ -43,7 +43,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
         self.src_url = "http://apis.datos.gob.ar/georef/api/"
         self.target_url = "http://apis.datos.gob.ar/georef-demo/api/"
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
     async def test_diff_provinces(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -61,7 +61,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
     async def test_diff_departments(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -79,7 +79,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
     async def test_diff_municipalities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -97,7 +97,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
     async def test_diff_census_localities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -115,7 +115,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
     async def test_diff_settlements(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -133,7 +133,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_response")
     async def test_diff_localities(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number
@@ -151,7 +151,7 @@ class DiffTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual({}, diff_dict)
 
-    @mock.patch('src.georef_ar_py.diff.get_entity_number')
+    @mock.patch('georef_ar_py.diff.get_entity_number')
     @mock.patch.object(DiffEntity, "_get_registers_by_region")
     async def test_diff_streets(self, mock_method, mock_entity_number):
         mock_entity_number.side_effect = get_mocked_entity_number

@@ -6,13 +6,14 @@ import os
 
 import click
 
-from . import georequests
-from .constants import ENTITIES
-from .diff import process
-from .georequests import API_BASE_URL
-from .info import get_resume
-from .normalization import AddressNormalizer, Address
-from .utils import converter
+from georef_ar_py import georequests
+from georef_ar_py.constants import ENTITIES
+from georef_ar_py.diff import process
+from georef_ar_py.georequests import API_BASE_URL
+from georef_ar_py.info import get_resume
+from georef_ar_py.normalization import AddressNormalizer, Address
+from georef_ar_py.plotter import plot_csv_points
+from georef_ar_py.utils import converter
 
 
 def get_logger(level):
@@ -211,3 +212,26 @@ def convert(input_file, output_file, **kwargs):
 
     converter(input_file, output_file)
 
+
+@cli.command()
+@click.argument('input_file', type=click.Path(exists=True))
+@click.option('--output_file', default=None, help='Nombre del archivo de salida.')
+@click.option('--lon', required=False, type=str, show_default=True, default="lon")
+@click.option('--lat', required=False, type=str, show_default=True, default="lat")
+@click.option('--debug', is_flag=True, show_default=False)
+def plot_file(input_file, **kwargs):
+    """
+    geoarpy plot-points Commandline
+
+    Grafica un csv con puntos de coordenadas
+     Se suministra un archivo (input_csv) y se leen las coordenadas
+    """
+
+    if not (output_file := kwargs.get('output_file')):
+        output_file = os.path.splitext(input_file)[0] + '.png'
+
+
+    debug = kwargs.pop('debug')
+    get_logger(logging.DEBUG if debug else logging.INFO)
+
+    plot_csv_points(input_file, output_file, lon_head=kwargs.get('lon'), lat_head=kwargs.get('lat'))
